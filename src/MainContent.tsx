@@ -1,3 +1,5 @@
+// ~/MainContent.tsx
+
 import { FunctionalComponent } from "preact";
 import { Section } from "./Section";
 import { SkeletonLoader } from "./SkeletonLoader";

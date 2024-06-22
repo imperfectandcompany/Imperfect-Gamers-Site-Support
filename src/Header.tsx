@@ -1,4 +1,5 @@
-import { h } from 'preact';
+// ~/Header.tsx
+
 import { FunctionalComponent } from 'preact';
 import { Link } from 'preact-router/match';
 import { content } from './content';

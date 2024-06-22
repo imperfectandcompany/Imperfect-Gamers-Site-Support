@@ -1,6 +1,5 @@
-import { h } from 'preact';
-import { FunctionalComponent } from 'preact';
-import { Card } from './FeatureCard';
+import { FunctionalComponent } from "preact";
+import { Card } from "./FeatureCard";
 
 interface DetailViewProps {
   item: Card;
