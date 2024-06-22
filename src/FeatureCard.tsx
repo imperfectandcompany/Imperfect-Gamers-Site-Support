@@ -36,7 +36,7 @@ export const FeatureCard: FunctionalComponent<FeatureCardProps> = ({
 }) => {
   const categorySlug = generateSlug(category);
   const titleSlug = generateSlug(title);
-  const href = `/detail${categorySlug ? `/${categorySlug}` : ""}${
+  const href = `/article${categorySlug ? `/${categorySlug}` : ""}${
     titleSlug ? `/${titleSlug}` : ""
   }`;
 

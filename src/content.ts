@@ -23,6 +23,7 @@ interface Content {
     contactUs: string;
   };
   sections: {
+    [key: string]: Section;
     inGameFeatures: Section;
     websiteResources: Section;
     rulesSupport: Section;

@@ -7,6 +7,8 @@ import { content } from "./content";
 import { VNode } from "preact";
 import { Card } from "./FeatureCard";
 import Detail from "./Detail";
+import { Categories } from "./Categories";
+import { CategoryItems } from "./CategoryItems";
 
 interface Section {
   title: string;
@@ -123,7 +125,7 @@ export function App(): VNode {
       const queryParams = new URLSearchParams(window.location.search);
       const searchQueryFromURL = queryParams.get("query");
 
-      if (path === "/" || path.startsWith("/detail/")) {
+      if (path === "/" || path.startsWith("/article/")) {
         dispatch({ type: "CLEAR_SEARCH" });
         dispatch({ type: "STOP_SEARCH" });
       } else if (searchQueryFromURL) {
@@ -166,7 +168,7 @@ export function App(): VNode {
   function handleCardClick(item?: Card) {
     if (item) {
       dispatch({ type: "SELECT_ITEM", item });
-      route(`/detail/${item.slug}`);
+      route(`/article/${item.slug}`);
     }
   }
 
@@ -224,7 +226,9 @@ export function App(): VNode {
             isSearching={state.isSearching}
             currentItemCount={state.currentItemCount}
           />
-          <Detail path="/detail/:id" />
+          <Detail path="/article/:id" />
+          <Categories path="/categories" /> 
+          <CategoryItems path="/category/:categorySlug" categorySlug="" />
         </Router>
       </main>
       <Footer />
