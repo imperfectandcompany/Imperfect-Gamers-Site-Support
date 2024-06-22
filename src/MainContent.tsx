@@ -1,18 +1,12 @@
 import { FunctionalComponent } from "preact";
 import { Section } from "./Section";
 import { SkeletonLoader } from "./SkeletonLoader";
+import { Card } from './FeatureCard';
 
-interface Card {
-  link: string;
-  imgSrc: string;
-  title: string;
-  description: string;
-  detailedDescription: string;
-}
-
-interface SectionData {
+export interface SectionData {
   title: string;
   cards: Card[];
+  category: string; // Assuming category is of type string
 }
 
 interface MainContentProps {

@@ -1,121 +1,181 @@
-import { useState, useEffect } from "preact/hooks";
-import { Header } from "./Header";
-import { MainContent } from "./MainContent";
-import { DetailView } from "./DetailView";
-import { Footer } from "./Footer";
-import { content } from "./content";
-import { VNode } from "preact";
-
-interface Card {
-  link: string;
-  imgSrc: string;
-  title: string;
-  description: string;
-  detailedDescription: string;
-}
+import { Router, route } from 'preact-router';
+import { useEffect, useReducer, useState } from 'preact/hooks';
+import { Header } from './Header';
+import { MainContent, SectionData } from './MainContent';
+import { Footer } from './Footer';
+import { content } from './content';
+import { VNode } from 'preact';
+import { Card } from './FeatureCard';
+import Detail from './Detail';
 
 interface Section {
   title: string;
   cards: Card[];
 }
 
-export function App(): VNode {
-  const [selectedItem, setSelectedItem] = useState<Card | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [searchTimeout, setSearchTimeout] = useState<number | null>(null);
-  const [currentItemCount, setCurrentItemCount] = useState<number>(0);
+interface HomeProps {
+  path: string;
+  onCardClick: (item?: Card) => void;
+  searchQuery: string;
+  handleSearchChange: (event: Event) => void;
+  isSearching: boolean;
+  currentItemCount: number;
+}
 
-  function handleCardClick(item: Card) {
-    setSearchQuery("");
-    setIsSearching(false);
-    setSelectedItem(item);
-  }
-
-  function handleSearchChange(event: Event) {
-    const value = (event.target as HTMLInputElement).value.toLowerCase();
-    setSearchQuery(value);
-    setIsSearching(true);
-    if (selectedItem) {
-      setSelectedItem(null); // Reset selected item when typing
-    }
-    if (searchTimeout) clearTimeout(searchTimeout);
-    setSearchTimeout(
-      window.setTimeout(() => {
-        setIsSearching(false);
-      }, 500)
-    );
-  }
-
-  const filteredSections = Object.keys(content.sections).reduce<{
-    [key: string]: Section;
-  }>((acc, key) => {
+const Home = ({ onCardClick, searchQuery, handleSearchChange, isSearching, currentItemCount }: HomeProps) => {
+  const filteredSections = Object.keys(content.sections).reduce<{ [key: string]: SectionData }>((acc, key) => {
     const section = content.sections[key as keyof typeof content.sections];
-    const filteredCards = section.cards.filter(
-      (card) =>
-        card.title.toLowerCase().includes(searchQuery) ||
-        card.description.toLowerCase().includes(searchQuery) ||
-        card.detailedDescription.toLowerCase().includes(searchQuery)
-    );
+    const filteredCards = section.cards.filter(card =>
+      card.title.toLowerCase().includes(searchQuery) ||
+      card.description.toLowerCase().includes(searchQuery) ||
+      card.detailedDescription.toLowerCase().includes(searchQuery)
+    ).map(card => ({ ...card, category: "" }));
     if (filteredCards.length > 0) {
-      acc[key] = { ...section, cards: filteredCards };
+      acc[key] = { ...section, cards: filteredCards, category: "" };
     }
     return acc;
   }, {});
 
-  const totalResults = Object.values(filteredSections).reduce(
-    (total, section) => total + section.cards.length,
-    0
+  const totalResults = Object.values(filteredSections).reduce((total, section) => total + section.cards.length, 0);
+
+  return (
+    <MainContent
+      sections={filteredSections}
+      totalResults={totalResults}
+      isSearching={isSearching}
+      searchQuery={searchQuery}
+      onCardClick={onCardClick}
+      currentItemCount={currentItemCount}
+    />
   );
+};
+
+interface AppState {
+  searchQuery: string;
+  isSearching: boolean;
+  selectedItem: Card | null;
+  currentItemCount: number;
+}
+
+interface Action {
+  type: string;
+  value?: string;
+  item?: Card | null;
+}
+
+const initialState: AppState = {
+  searchQuery: '',
+  isSearching: false,
+  selectedItem: null,
+  currentItemCount: 0,
+};
+
+function reducer(state: AppState, action: Action): AppState {
+  switch (action.type) {
+    case 'UPDATE_SEARCH':
+      return { ...state, searchQuery: action.value ?? '', isSearching: true };
+    case 'CLEAR_SEARCH':
+      return { ...state, searchQuery: '', isSearching: false, selectedItem: null };
+    case 'SELECT_ITEM':
+      return { ...state, selectedItem: action.item ?? null, isSearching: false, searchQuery: '' }; // Clear searchQuery when item is selected
+    case 'UNSELECT_ITEM':
+      return { ...state, selectedItem: null };
+    case 'STOP_SEARCH':
+      return { ...state, isSearching: false };
+    default:
+      return state;
+  }
+}
+
+export function App(): VNode {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [searchTimeout, setSearchTimeout] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!isSearching) {
-      setCurrentItemCount(totalResults);
-    }
-  }, [totalResults, isSearching]);
+    const handleRouteChange = () => {
+      const path = window.location.pathname;
+      const queryParams = new URLSearchParams(window.location.search);
+      const searchQueryFromURL = queryParams.get('query');
 
-  function resetView() {
-    setSelectedItem(null);
-    setSearchQuery("");
-    setIsSearching(false);
+      if (path === '/' || path.startsWith('/detail/')) {
+        dispatch({ type: 'CLEAR_SEARCH' });
+        dispatch({ type: 'STOP_SEARCH' });
+      } else if (searchQueryFromURL) {
+        dispatch({ type: 'UPDATE_SEARCH', value: searchQueryFromURL });
+      } else {
+        dispatch({ type: 'STOP_SEARCH' });
+      }
+    };
+
+    window.addEventListener('popstate', handleRouteChange);
+    return () => window.removeEventListener('popstate', handleRouteChange);
+  }, [state.searchQuery]);
+
+  useEffect(() => {
+    if (searchTimeout) {
+      window.clearTimeout(searchTimeout);
+    }
+
+    if (state.searchQuery && !state.isSearching) {
+      const timeoutId = window.setTimeout(() => {
+        dispatch({ type: 'STOP_SEARCH' });
+        if (!state.selectedItem) {
+          const currentURL = `/search?query=${state.searchQuery}`;
+          if (window.location.pathname + window.location.search !== currentURL) {
+            route(currentURL);
+          }
+        }
+      }, 500);
+
+      setSearchTimeout(timeoutId);
+      return () => window.clearTimeout(timeoutId);
+    } else {
+      dispatch({ type: 'STOP_SEARCH' });
+    }
+  }, [state.searchQuery, state.selectedItem, state.isSearching]);
+
+  function handleCardClick(item?: Card) {
+    if (item) {
+      dispatch({ type: 'SELECT_ITEM', item });
+      route(`/detail/${item.slug}`);
+    }
   }
+
+function handleSearchChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const value = target.value.toLowerCase();
+
+    // Unselect any selected item and ensure you leave the detail view when typing begins
+    if (state.selectedItem) {
+        dispatch({ type: 'UNSELECT_ITEM' });
+        // Navigate back to the search or home page, depending on whether there's a search value
+        const newPath = value === '' ? '/' : `/search?query=${value}`;
+        route(newPath);
+    }
+
+    dispatch({ type: 'UPDATE_SEARCH', value });
+
+    // Update the URL without navigating if already on the search page
+    if (window.location.pathname + window.location.search !== `/search?query=${value}`) {
+        history.replaceState({}, '', `/search?query=${value}`);
+    }
+}
+
+  
 
   return (
     <div className="flex flex-col min-h-screen mx-auto py-8 max-w-screen-xl">
-      <div className="flex flex-col w-full gap-2 mb-10">
-        {" "}
-        <div className="ring-1 ring-inset ring-white/5  text-white bg-gradient-to-b from-indigo-500 via-indigo-500/5 shadow-2xl rounded-xl p-[0.060rem]">
-          {" "}
-          <div className="bg-blue-900 rounded-xl p-4">
-            {" "}
-            <h3 className="text-sm font-medium">
-              Fri Jun 21, 2024 - This site is currently a work in progress. For
-              immediate assistance, please visit our discord at
-              https://imperfectgamers.org/discord/. Thank you. - Imperfect
-              Gamers Team
-            </h3>{" "}
-          </div>{" "}
-        </div>{" "}
-      </div>
-
       <Header
         onSearchChange={handleSearchChange}
-        onLogoClick={resetView}
-        searchQuery={searchQuery}
+        onLogoClick={() => dispatch({ type: 'CLEAR_SEARCH' })}
+        searchQuery={state.searchQuery}
       />
       <main className="flex-1 relative">
-        {selectedItem ? (
-          <DetailView item={selectedItem} onBack={() => resetView()} />
-        ) : (
-          <MainContent
-            sections={filteredSections}
-            totalResults={totalResults}
-            isSearching={isSearching}
-            searchQuery={searchQuery}
-            onCardClick={handleCardClick}
-            currentItemCount={currentItemCount}
-          />
-        )}
+        <Router>
+          <Home path="/" onCardClick={handleCardClick} searchQuery={state.searchQuery} handleSearchChange={handleSearchChange} isSearching={state.isSearching} currentItemCount={state.currentItemCount} />
+          <Home path="/search" onCardClick={handleCardClick} searchQuery={state.searchQuery} handleSearchChange={handleSearchChange} isSearching={state.isSearching} currentItemCount={state.currentItemCount} />
+          <Detail path="/detail/:id" />
+        </Router>
       </main>
       <Footer />
     </div>

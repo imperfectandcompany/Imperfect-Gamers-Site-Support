@@ -1,5 +1,6 @@
-import { FunctionalComponent } from "preact";
-import { Card } from "./FeatureCard";
+import { h } from 'preact';
+import { FunctionalComponent } from 'preact';
+import { Card } from './FeatureCard';
 
 interface DetailViewProps {
   item: Card;
@@ -64,7 +65,7 @@ export const DetailView: FunctionalComponent<DetailViewProps> = ({
           </filter>
         </defs>
       </svg>
-      <div className=" px-4 py-32 mx-auto max-w-7xl md:px-8 lg:px-12 lg:pt-18">
+      <div className="px-4 py-32 mx-auto max-w-7xl md:px-8 lg:px-12 lg:pt-18">
         <div className="detail-view px-4 py-4">
           <button
             className="mt-2 px-6 py-2 bg-black/15 rounded hover:cursor-pointer focus:cursor-auto focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all duration-300 ease-in-out !z-20"

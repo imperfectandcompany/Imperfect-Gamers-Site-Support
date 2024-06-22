@@ -1,5 +1,7 @@
-import { FunctionalComponent } from "preact";
-import { content } from "./content";
+import { h } from 'preact';
+import { FunctionalComponent } from 'preact';
+import { Link } from 'preact-router/match';
+import { content } from './content';
 
 interface HeaderProps {
   onSearchChange: (event: Event) => void;
@@ -15,12 +17,14 @@ export const Header: FunctionalComponent<HeaderProps> = ({
   return (
     <header className="flex justify-between items-center px-4">
       <div className="flex items-center cursor-pointer z-30">
-        <img
-          alt="Imperfect Gamers Logo, a gaming community"
-          src="https://cdn.imperfectgamers.org/inc/assets/img/logo.svg"
-          style={{ height: "60px" }}
-          onClick={onLogoClick}
-        />
+        <Link href="/">
+          <img
+            alt="Imperfect Gamers Logo, a gaming community"
+            src="https://cdn.imperfectgamers.org/inc/assets/img/logo.svg"
+            style={{ height: "60px" }}
+            onClick={onLogoClick}
+          />
+        </Link>
       </div>
       <div className="flex space-x-4">
         <input

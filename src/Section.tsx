@@ -1,8 +1,18 @@
 import { FunctionalComponent } from "preact";
-import { Card, FeatureCard } from "./FeatureCard";
+import { FeatureCard } from "./FeatureCard";
+interface Card {
+  link: string;
+  imgSrc: string;
+  description: string;
+  detailedDescription: string;
+  title: string;
+  category: string; // Add the category property
+  slug: string; // Add the slug property
+}
 
 interface SectionData {
   title: string;
+  category: string;
   cards: Card[];
 }
 
@@ -26,7 +36,13 @@ export const Section: FunctionalComponent<SectionProps> = ({
       {data.cards.map((card) => (
         <FeatureCard
           key={card.title}
-          {...card}
+          title={card.title}
+          link={card.link} // Add the link value
+          imgSrc={card.imgSrc} // Add the imgSrc value
+          description={card.description} // Add the description value
+          detailedDescription={card.detailedDescription} // Add the detailedDescription value
+          category={card.category}
+          slug={card.slug}
           onClick={() => onCardClick(card)}
         />
       ))}
