@@ -1,7 +1,7 @@
 import { FunctionalComponent } from "preact";
 import { Section } from "./Section";
 import { SkeletonLoader } from "./SkeletonLoader";
-import { Card } from './FeatureCard';
+import { Card } from "./FeatureCard";
 
 export interface SectionData {
   title: string;

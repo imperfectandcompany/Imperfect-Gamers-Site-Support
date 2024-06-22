@@ -137,7 +137,7 @@ body {
 @media (min-width: 768px) {
   .additional-image {
     background-size: cover;
-  background-image: url("https://cdn.imperfectgamers.org/inc/assets/img/support/support_banner_mobile.png");
+    background-image: url("https://cdn.imperfectgamers.org/inc/assets/img/support/support_banner_mobile.png");
     height: 350px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
