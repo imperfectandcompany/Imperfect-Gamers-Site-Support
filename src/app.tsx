@@ -32,13 +32,17 @@ const Home = ({
   }>((acc, key) => {
     const section = content.sections[key as keyof typeof content.sections];
     const filteredCards = section.cards
-      .filter(
-        (card) =>
-          card.title.toLowerCase().includes(searchQuery) ||
-          card.description.toLowerCase().includes(searchQuery) ||
-          card.detailedDescription.toLowerCase().includes(searchQuery)
-      )
-      .map((card) => ({ ...card, category: "" }));
+      .map(card => {
+        const matches = {
+          title: card.title.toLowerCase().includes(searchQuery),
+          description: card.description.toLowerCase().includes(searchQuery),
+          detailedDescription: card.detailedDescription.toLowerCase().includes(searchQuery),
+        };
+        return { ...card, matches };
+      })
+      .filter(card => Object.values(card.matches).some(Boolean))
+      .map(card => ({ ...card, category: "" }));
+    
     if (filteredCards.length > 0) {
       acc[key] = { ...section, cards: filteredCards, category: "" };
     }

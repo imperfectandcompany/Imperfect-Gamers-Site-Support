@@ -456,3 +456,8 @@ body {
   :where(a code):not(:where([class~="not-detail"], [class~="not-detail"] *)) {
   color: inherit;
 }
+
+.highlight {
+  background-color: yellow;
+  font-weight: bold;
+}

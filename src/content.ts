@@ -6,6 +6,11 @@ interface Card {
   detailedDescription: string;
   category: string; // Ensure this property is included
   slug: string; // Ensure this property is included
+  matches: {
+    title: boolean;
+    description: boolean;
+    detailedDescription: boolean;
+  };
 }
 
 interface Section {
@@ -49,6 +54,11 @@ export const content: Content = {
             "Surf Maps are custom-designed maps that challenge players to navigate complex environments using surfing techniques. These maps require precision and skill, offering a unique way to improve your control and timing in games.",
           category: "",
           slug: "",
+          matches: {
+            title: false,
+            description: false,
+            detailedDescription: false,
+          },
         },
         {
           link: "#",
@@ -60,6 +70,11 @@ export const content: Content = {
             "SharpTimer is an in-game tool that helps you manage your gaming sessions efficiently. It provides real-time updates and alerts to ensure you maintain a healthy balance between gaming and other activities.",
           category: "",
           slug: "",
+          matches: {
+            title: false,
+            description: false,
+            detailedDescription: false,
+          },
         },
       ],
     },
@@ -76,6 +91,11 @@ export const content: Content = {
             "Our subscription plans offer various perks such as early access to new games, exclusive skins, and additional in-game content. These benefits enhance your gaming experience and provide added enjoyment.",
           category: "",
           slug: "",
+          matches: {
+            title: false,
+            description: false,
+            detailedDescription: false,
+          },
         },
         {
           link: "#",
@@ -86,6 +106,11 @@ export const content: Content = {
             "This feature allows you to track your gaming statistics and review any infractions you may have incurred. By analyzing this data, you can identify areas for improvement and refine your strategies for better performance.",
           category: "",
           slug: "",
+          matches: {
+            title: false,
+            description: false,
+            detailedDescription: false,
+          },
         },
       ],
     },
@@ -101,6 +126,11 @@ export const content: Content = {
             "Understanding the server rules is crucial for maintaining a respectful and enjoyable gaming environment. These rules are designed to ensure fair play and prevent disruptive behavior among players.",
           category: "",
           slug: "",
+          matches: {
+            title: false,
+            description: false,
+            detailedDescription: false,
+          },
         },
         {
           link: "#",
@@ -111,6 +141,11 @@ export const content: Content = {
             "If you encounter any problems or have questions about our games, our support team is ready to help. We strive to provide timely and effective assistance to ensure a smooth gaming experience.",
           category: "",
           slug: "",
+          matches: {
+            title: false,
+            description: false,
+            detailedDescription: false,
+          },
         },
       ],
     },

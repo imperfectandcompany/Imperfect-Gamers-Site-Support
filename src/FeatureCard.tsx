@@ -1,6 +1,6 @@
 import { FunctionalComponent } from "preact";
 import { Link } from "preact-router/match";
-import { generateSlug } from "./utils"; // Assuming utils.ts is the utility file
+import { generateSlug, highlightText } from "./utils"; // Assuming utils.ts is the utility file
 
 export interface Card {
   link: string;
@@ -10,11 +10,17 @@ export interface Card {
   title: string;
   category: string; // Add the category property
   slug: string; // Add the slug property
+  matches: {
+    title: boolean;
+    description: boolean;
+    detailedDescription: boolean;
+  };
 }
 
 interface FeatureCardProps extends Card {
   category: string; // Add category prop
   onClick: () => void;
+  searchQuery: string; // Add searchQuery prop
 }
 
 export const FeatureCard: FunctionalComponent<FeatureCardProps> = ({
@@ -22,7 +28,9 @@ export const FeatureCard: FunctionalComponent<FeatureCardProps> = ({
   imgSrc,
   title,
   description,
+  matches,
   onClick,
+  searchQuery,
 }) => {
   const categorySlug = generateSlug(category);
   const titleSlug = generateSlug(title);
@@ -30,28 +38,15 @@ export const FeatureCard: FunctionalComponent<FeatureCardProps> = ({
     titleSlug ? `/${titleSlug}` : ""
   }`;
 
+
   return (
-<Link href={href}>
-      <Link href={href}></Link>
-      <div
-        className="clickable"
-        aria-label={`Learn more about ${title}`}
-        onClick={onClick}
-      >
+    <Link href={href}>
+      <div className="clickable" aria-label={`Learn more about ${title}`} onClick={onClick}>
         <article className="card">
-          <img
-            alt={`Icon representing ${title}`}
-            height="100"
-            src={imgSrc}
-            width="100"
-          />
+          <img alt={`Icon representing ${title}`} height="100" src={imgSrc} width="100" />
           <div className="card-content">
-            <h3 className="mt-5 text-sm font-medium leading-6 text-black/75">
-              {title}
-            </h3>
-            <p className="mt-2 text-sm text-black/65 line-clamp-2">
-              {description}
-            </p>
+            <h3 className="mt-5 text-sm font-medium leading-6 text-black/75" dangerouslySetInnerHTML={{ __html: matches.title ? highlightText(title, searchQuery) : title }}></h3>
+            <p className="mt-2 text-sm text-black/65 line-clamp-2" dangerouslySetInnerHTML={{ __html: matches.description ? highlightText(description, searchQuery) : description }}></p>
           </div>
         </article>
       </div>

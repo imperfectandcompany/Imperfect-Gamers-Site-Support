@@ -111,6 +111,7 @@ export const MainContent: FunctionalComponent<MainContentProps> = ({
                 key={section.title}
                 data={section}
                 onCardClick={onCardClick}
+                searchQuery={searchQuery} // Pass searchQuery to Section
               />
             ))
           )}
