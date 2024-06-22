@@ -9,6 +9,8 @@ import { Card } from "./FeatureCard";
 import Detail from "./Detail";
 import { Categories } from "./Categories";
 import { CategoryItems } from "./CategoryItems";
+import { NotFound } from "./NotFound";
+
 
 interface Section {
   title: string;
@@ -229,6 +231,7 @@ export function App(): VNode {
           <Detail path="/article/:id" />
           <Categories path="/categories" /> 
           <CategoryItems path="/category/:categorySlug" categorySlug="" />
+          <NotFound default />
         </Router>
       </main>
       <Footer />
