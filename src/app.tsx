@@ -12,64 +12,9 @@ import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { SectionData, MainContent } from "./components/MainContent";
 import { NotFound } from "./components/NotFound";
+import Home from "./components/Home";
 
-
-interface HomeProps {
-  path: string;
-  onCardClick: (item?: Card) => void;
-  searchQuery: string;
-  isSearching: boolean;
-  currentItemCount: number;
-}
-
-const Home = ({
-  onCardClick,
-  searchQuery,
-  isSearching,
-  currentItemCount,
-}: HomeProps) => {
-  const filteredSections = Object.keys(content.sections).reduce<{
-    [key: string]: SectionData;
-  }>((acc, key) => {
-    const section = content.sections[key as keyof typeof content.sections];
-    const filteredCards = section.cards
-      .map((card) => {
-        const matches = {
-          title: card.title.toLowerCase().includes(searchQuery),
-          description: card.description.toLowerCase().includes(searchQuery),
-          detailedDescription: card.detailedDescription
-            .toLowerCase()
-            .includes(searchQuery),
-        };
-        return { ...card, matches };
-      })
-      .filter((card) => Object.values(card.matches).some(Boolean))
-      .map((card) => ({ ...card, category: "" }));
-
-    if (filteredCards.length > 0) {
-      acc[key] = { ...section, cards: filteredCards, category: "" };
-    }
-    return acc;
-  }, {});
-
-  const totalResults = Object.values(filteredSections).reduce(
-    (total, section) => total + section.cards.length,
-    0
-  );
-
-  return (
-    <MainContent
-      sections={filteredSections}
-      totalResults={totalResults}
-      isSearching={isSearching}
-      searchQuery={searchQuery}
-      onCardClick={onCardClick}
-      currentItemCount={currentItemCount}
-    />
-  );
-};
-
-interface AppState {
+export interface AppState {
   searchQuery: string;
   isSearching: boolean;
   selectedItem: Card | null;
@@ -77,13 +22,13 @@ interface AppState {
   lastRoute: string | null;
 }
 
-interface Action {
+export interface Action {
   type: string;
   value?: string;
   item?: Card | null;
 }
 
-const initialState: AppState = {
+export const initialState: AppState = {
   searchQuery: "",
   isSearching: false,
   selectedItem: null,
@@ -91,7 +36,7 @@ const initialState: AppState = {
   lastRoute: null,
 };
 
-function reducer(state: AppState, action: Action): AppState {
+export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case "UPDATE_SEARCH":
       return { ...state, searchQuery: action.value ?? "", isSearching: true };

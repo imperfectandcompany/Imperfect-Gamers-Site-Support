@@ -5,10 +5,6 @@ import { describe, it, expect } from 'vitest';
 import { Footer } from '../../components/Footer';
 
 describe('Footer Component', () => {
-  it('should work', () => {
-    expect(Footer).toBeTruthy();
-  });
-
   it('should render the copyright text', () => {
     render(<Footer />);
     expect(screen.getByText('© 2024 Imperfect Gamers. All rights reserved.')).toBeInTheDocument();
