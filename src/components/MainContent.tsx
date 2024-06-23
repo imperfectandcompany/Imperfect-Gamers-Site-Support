@@ -1,9 +1,9 @@
-// ~/MainContent.tsx
+/** src/components/MainContent.tsx **/
 
 import { FunctionalComponent } from "preact";
-import { Section } from "./Section";
 import { SkeletonLoader } from "./SkeletonLoader";
 import { Card } from "./FeatureCard";
+import { Section } from "./Section";
 
 export interface SectionData {
   title: string;

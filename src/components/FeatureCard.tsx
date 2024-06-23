@@ -1,7 +1,9 @@
-// src/FeatureCard.tsx
+// src/components/FeatureCard.tsx
+
 import { FunctionalComponent } from "preact";
 import { Link } from "preact-router/match";
-import { generateSlug, highlightText } from "./utils";
+import { generateSlug, highlightText } from "../utils";
+
 
 export interface Card {
   link: string;

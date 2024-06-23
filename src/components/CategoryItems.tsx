@@ -1,7 +1,8 @@
-// src/CategoryItems.tsx
+// src/components/CategoryItems.tsx
+
 import { FunctionalComponent } from "preact";
-import { content } from "./content";
-import { generateSlug } from "./utils";
+import { content } from "../content";
+import { generateSlug } from "../utils";
 import { Card, FeatureCard } from "./FeatureCard";
 
 interface CategoryItemsProps {

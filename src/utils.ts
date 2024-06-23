@@ -1,6 +1,6 @@
-// ~/utils.tsx
+/** src/utils.ts **/
 
-import { Card } from "./FeatureCard";
+import { Card } from "./components/FeatureCard";
 import { content } from "./content";
 
 export function generateSlug(title: string): string {

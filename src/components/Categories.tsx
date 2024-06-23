@@ -1,8 +1,10 @@
-// src/Categories.tsx
+// src/components/Categories.tsx
+
 import { FunctionalComponent } from "preact";
-import { content } from "./content";
-import { Link } from "preact-router/match";
-import { generateSlug } from "./utils";
+import { Link } from "preact-router";
+import { content } from "../content";
+import { generateSlug } from "../utils";
+
 
 export const Categories: FunctionalComponent = () => {
   const categories = Object.keys(content.sections).map(

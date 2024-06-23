@@ -1,4 +1,5 @@
-// src/NotFound.tsx
+// src/components/NotFound.tsx
+
 import { FunctionalComponent } from "preact";
 import { Link } from "preact-router/match";
 

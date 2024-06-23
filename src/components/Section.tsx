@@ -1,3 +1,5 @@
+/** src/components/Section.tsx **/
+
 import { FunctionalComponent } from "preact";
 import { FeatureCard } from "./FeatureCard";
 

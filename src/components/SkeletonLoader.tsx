@@ -1,3 +1,5 @@
+/** src/components/SkeletonLoader.tsx **/
+
 import { Fragment, FunctionalComponent } from "preact";
 
 interface SectionData {

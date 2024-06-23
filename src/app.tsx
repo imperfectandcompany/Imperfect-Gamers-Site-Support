@@ -1,15 +1,18 @@
+// src/app.tsx
+
 import { Router, route } from "preact-router";
 import { useEffect, useReducer, useState } from "preact/hooks";
-import { Header } from "./Header";
-import { MainContent, SectionData } from "./MainContent";
-import { Footer } from "./Footer";
 import { content } from "./content";
 import { VNode } from "preact";
-import { Card } from "./FeatureCard";
-import Detail from "./Detail";
-import { Categories } from "./Categories";
-import { NotFound } from "./NotFound";
-import { CategoryItems } from "./CategoryItems";
+import Article from "./components/Article";
+import { Categories } from "./components/Categories";
+import { CategoryItems } from "./components/CategoryItems";
+import { Card } from "./components/FeatureCard";
+import { Footer } from "./components/Footer";
+import { Header } from "./components/Header";
+import { SectionData, MainContent } from "./components/MainContent";
+import { NotFound } from "./components/NotFound";
+
 
 interface HomeProps {
   path: string;
@@ -211,7 +214,7 @@ export function App(): VNode {
     const target = event.target as HTMLInputElement;
     const value = target.value.toLowerCase();
 
-    // Unselect any selected item and ensure you leave the detail view when typing begins
+    // Unselect any selected item and ensure you leave the article view when typing begins
     if (state.selectedItem) {
       dispatch({ type: "UNSELECT_ITEM" });
     }
@@ -240,6 +243,39 @@ export function App(): VNode {
 
   return (
     <div className="flex flex-col min-h-screen mx-auto py-8 max-w-screen-xl">
+
+
+      <div class="flex flex-col w-full gap-2 mb-10">
+      <div class="relative bg-gradient-to-b from-indigo-500 via-indigo-500/5 to-indigo-500/10 shadow-lg rounded-lg p-1 mx-4 sm:mx-6 md:mx-8 lg:mx-10 xl:mx-4">
+
+          <div className="bg-blue-900 text-white text-center p-4 rounded-lg">
+            <button
+              className="absolute top-3 right-3 text-indigo-300 hover:text-indigo-500"
+              onClick={(e) => {
+                const parentElement = e.currentTarget.parentElement;
+                if (parentElement) {
+                  const grandParentElement = parentElement.parentElement;
+                  if (grandParentElement) {
+                    grandParentElement.style.display = "none";
+                  }
+                }
+              }}
+            >
+              &#x2715;
+            </button>
+            <p className="text-xs sm:text-sm md:text-base">
+              <span className="font-medium text-indigo-50">Update:</span> <span className="text-indigo-100">Fri, Jun 21, 2024</span><br></br>
+              This site is currently a work in progress. For immediate
+              assistance, please visit our discord at{" "}
+              <a href="https://imperfectgamers.org/discord/" class="text-indigo-300 hover:text-indigo-500">https://imperfectgamers.org/discord/</a>. 
+            </p>
+            <p class="text-right text-xs mt-1 sm:text-sm italic">
+              - Imperfect Gamers Team
+            </p>
+          </div>
+        </div>
+      </div>
+
       <Header
         onSearchChange={handleSearchChange}
         onLogoClick={() => dispatch({ type: "CLEAR_SEARCH" })}
@@ -261,7 +297,7 @@ export function App(): VNode {
             isSearching={state.isSearching}
             currentItemCount={state.currentItemCount}
           />
-          <Detail path="/article/:id" lastRoute={state.lastRoute || "/"} />
+          <Article path="/article/:id" lastRoute={state.lastRoute || "/"} />
           <Categories path="/categories" />
           <CategoryItems
             path="/category/:categorySlug"

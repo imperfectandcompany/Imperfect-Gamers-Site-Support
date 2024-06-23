@@ -1,8 +1,9 @@
-// src/Detail.tsx
-import { findCardBySlug } from "./utils"; // Assuming utils.ts is the utility file
-import { DetailView } from "./DetailView";
+// src/Article.tsx
 
-interface DetailProps {
+import { findCardBySlug } from "../utils";
+import { ArticleView } from "./ArticleView";
+
+interface ArticleProps {
   id?: string;
   path: string;
   lastRoute: string;
@@ -10,7 +11,7 @@ interface DetailProps {
 
 const dev = true;
 
-const Detail = ({ id, lastRoute }: DetailProps) => {
+const Article = ({ id, lastRoute }: ArticleProps) => {
   const card = id ? findCardBySlug(id) : null;
 
   if (dev) {
@@ -41,7 +42,7 @@ const Detail = ({ id, lastRoute }: DetailProps) => {
     }
   }
 
-  return <DetailView item={card} onBack={handleBackAction} />;
+  return <ArticleView item={card} onBack={handleBackAction} />;
 };
 
-export default Detail;
+export default Article;

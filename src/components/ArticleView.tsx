@@ -1,13 +1,23 @@
-import { FunctionalComponent } from "preact";
-import { content } from "./content";
+// src/components/DetailView.tsx
 
-export const Footer: FunctionalComponent = () => {
+import { FunctionalComponent } from "preact";
+import { Card } from "./FeatureCard";
+
+interface DetailViewProps {
+  item: Card;
+  onBack: () => void;
+}
+
+export const ArticleView: FunctionalComponent<DetailViewProps> = ({
+  item,
+  onBack,
+}) => {
   return (
-    <footer className="relative text-center text-sm py-6 border-t border-black/5">
+    <>
       <svg
-        className="absolute blur-3xl right-0 opacity-80"
-        width="50%"
-        height="100%"
+        className="absolute blur-3xl opacity-30 right-96 -mt-96"
+        width="70%"
+        height="70%"
         viewBox="0 0 400 400"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -24,7 +34,7 @@ export const Footer: FunctionalComponent = () => {
             ></path>
             <path
               d="M320 400H400V78.75L332.5 211.5L320 400Z"
-              fill="#7fcef3"
+              fill="#B5BFF1"
             ></path>
             <path
               d="M400 0H128.6L332.5 211.5L400 78.75V0Z"
@@ -56,19 +66,20 @@ export const Footer: FunctionalComponent = () => {
           </filter>
         </defs>
       </svg>
-      <p>{content.footer.copyright}</p>
-      <div className="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4 mt-2 relative">
-        {content.footer.links.map((link) => (
-          <a
-            key={link.label}
-            className="hover:text-gray-500"
-            href={link.href}
-            aria-label={link.label}
+      <div className="px-8 py-32 mx-auto max-w-7xl md:px-12 lg:px-18 lg:py-22">
+        <div className="detail-view px-4 py-4">
+          <button
+            className="mt-2 px-6 py-2 bg-black/15 rounded hover:cursor-pointer focus:cursor-auto focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all duration-300 ease-in-out !z-20"
+            onClick={onBack}
           >
-            {link.label}
-          </a>
-        ))}
+            Back
+          </button>
+          <h1 className="mt-8 text-4xl font-normal tracking-tighter text-black/75 sm:text-5xl">
+            {item.title}
+          </h1>
+          <p className="detail-description mt-4">{item.detailedDescription}</p>
+        </div>
       </div>
-    </footer>
+    </>
   );
 };
