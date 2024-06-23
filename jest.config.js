@@ -1,10 +1,8 @@
+// /jest.config.js
+
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 export default {
   preset: 'ts-jest',
-  transform: {
-    "^.+\\.tsx?$": "ts-jest",
-    "^.+\\.css$": "jest-transform-css",
-  },
   moduleNameMapper: {
     "react-dom/test-utils": "preact/test-utils",
     "react-dom": "preact/compat",
