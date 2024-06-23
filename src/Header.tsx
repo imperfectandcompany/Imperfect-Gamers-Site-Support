@@ -1,8 +1,8 @@
 // ~/Header.tsx
 
-import { FunctionalComponent } from 'preact';
-import { Link } from 'preact-router/match';
-import { content } from './content';
+import { FunctionalComponent } from "preact";
+import { Link } from "preact-router/match";
+import { content } from "./content";
 
 interface HeaderProps {
   onSearchChange: (event: Event) => void;

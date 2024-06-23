@@ -8,14 +8,8 @@ import { VNode } from "preact";
 import { Card } from "./FeatureCard";
 import Detail from "./Detail";
 import { Categories } from "./Categories";
-import { CategoryItems } from "./CategoryItems";
 import { NotFound } from "./NotFound";
-
-
-interface Section {
-  title: string;
-  cards: Card[];
-}
+import { CategoryItems } from "./CategoryItems";
 
 interface HomeProps {
   path: string;
@@ -36,17 +30,19 @@ const Home = ({
   }>((acc, key) => {
     const section = content.sections[key as keyof typeof content.sections];
     const filteredCards = section.cards
-      .map(card => {
+      .map((card) => {
         const matches = {
           title: card.title.toLowerCase().includes(searchQuery),
           description: card.description.toLowerCase().includes(searchQuery),
-          detailedDescription: card.detailedDescription.toLowerCase().includes(searchQuery),
+          detailedDescription: card.detailedDescription
+            .toLowerCase()
+            .includes(searchQuery),
         };
         return { ...card, matches };
       })
-      .filter(card => Object.values(card.matches).some(Boolean))
-      .map(card => ({ ...card, category: "" }));
-    
+      .filter((card) => Object.values(card.matches).some(Boolean))
+      .map((card) => ({ ...card, category: "" }));
+
     if (filteredCards.length > 0) {
       acc[key] = { ...section, cards: filteredCards, category: "" };
     }
@@ -75,6 +71,7 @@ interface AppState {
   isSearching: boolean;
   selectedItem: Card | null;
   currentItemCount: number;
+  lastRoute: string | null;
 }
 
 interface Action {
@@ -88,6 +85,7 @@ const initialState: AppState = {
   isSearching: false,
   selectedItem: null,
   currentItemCount: 0,
+  lastRoute: null,
 };
 
 function reducer(state: AppState, action: Action): AppState {
@@ -101,6 +99,8 @@ function reducer(state: AppState, action: Action): AppState {
         isSearching: false,
         selectedItem: null,
       };
+    case "UPDATE_LAST_ROUTE":
+      return { ...state, lastRoute: action.value ?? null };
     case "SELECT_ITEM":
       return {
         ...state,
@@ -121,25 +121,55 @@ export function App(): VNode {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [searchTimeout, setSearchTimeout] = useState<number | null>(null);
 
+  const handleRouteChange = () => {
+    const path = window.location.pathname;
+    const queryParams = new URLSearchParams(window.location.search);
+    const searchQueryFromURL = queryParams.get("query");
+
+    if (path === "/" || path.startsWith("/article/")) {
+      dispatch({ type: "CLEAR_SEARCH" });
+      dispatch({ type: "STOP_SEARCH" });
+    } else if (searchQueryFromURL) {
+      dispatch({ type: "UPDATE_SEARCH", value: searchQueryFromURL });
+      // Ensure the search input is pre-filled and search is initiated
+      if (
+        path.startsWith("/search") &&
+        searchQueryFromURL !== state.searchQuery
+      ) {
+        dispatch({ type: "START_SEARCH", value: searchQueryFromURL });
+      }
+    } else {
+      dispatch({ type: "STOP_SEARCH" });
+    }
+  };
+
+  useEffect(() => {
+    // Call handleRouteChange on mount to handle direct URL visits
+    handleRouteChange();
+
+    window.addEventListener("popstate", handleRouteChange);
+    return () => window.removeEventListener("popstate", handleRouteChange);
+  }, [state.searchQuery]);
+
   useEffect(() => {
     const handleRouteChange = () => {
       const path = window.location.pathname;
       const queryParams = new URLSearchParams(window.location.search);
       const searchQueryFromURL = queryParams.get("query");
-
-      if (path === "/" || path.startsWith("/article/")) {
-        dispatch({ type: "CLEAR_SEARCH" });
-        dispatch({ type: "STOP_SEARCH" });
-      } else if (searchQueryFromURL) {
+      if (path.startsWith("/search") && searchQueryFromURL) {
         dispatch({ type: "UPDATE_SEARCH", value: searchQueryFromURL });
-      } else {
-        dispatch({ type: "STOP_SEARCH" });
+      } else if (path === "/" || path.startsWith("/article/")) {
+        dispatch({ type: "CLEAR_SEARCH" });
       }
+      // Add any other route-specific logic here
     };
 
+    // Call handleRouteChange on mount and on every popstate event
+    handleRouteChange();
     window.addEventListener("popstate", handleRouteChange);
+
     return () => window.removeEventListener("popstate", handleRouteChange);
-  }, [state.searchQuery]);
+  }, []); // Ensure this effect runs only once on mount and unmount
 
   useEffect(() => {
     if (searchTimeout) {
@@ -169,8 +199,11 @@ export function App(): VNode {
 
   function handleCardClick(item?: Card) {
     if (item) {
+      dispatch({
+        type: "UPDATE_LAST_ROUTE",
+        value: window.location.pathname + window.location.search,
+      });
       dispatch({ type: "SELECT_ITEM", item });
-      route(`/article/${item.slug}`);
     }
   }
 
@@ -228,9 +261,13 @@ export function App(): VNode {
             isSearching={state.isSearching}
             currentItemCount={state.currentItemCount}
           />
-          <Detail path="/article/:id" />
-          <Categories path="/categories" /> 
-          <CategoryItems path="/category/:categorySlug" categorySlug="" />
+          <Detail path="/article/:id" lastRoute={state.lastRoute || "/"} />
+          <Categories path="/categories" />
+          <CategoryItems
+            path="/category/:categorySlug"
+            categorySlug=""
+            onCardClick={handleCardClick} // Pass handleCardClick to CategoryItems
+          />
           <NotFound default />
         </Router>
       </main>

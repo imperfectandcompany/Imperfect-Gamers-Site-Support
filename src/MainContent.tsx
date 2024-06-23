@@ -92,7 +92,7 @@ export const MainContent: FunctionalComponent<MainContentProps> = ({
           </filter>
         </defs>
       </svg>
-      <div className="container mx-auto px-4 relative px-8 py-16 mx-auto max-w-7xl md:px-12 lg:px-18 lg:py-22">
+      <div className="container mx-auto relative px-8 py-16 max-w-7xl md:px-12 lg:px-18 lg:py-22">
         <span className="text-xs font-medium tracking-widest text-transparent uppercase bg-clip-text bg-gradient-to-r from-indigo-300 via-indigo-400 to-indigo-500">
           Help Center
         </span>

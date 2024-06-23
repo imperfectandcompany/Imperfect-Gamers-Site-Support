@@ -41,17 +41,47 @@ export const FeatureCard: FunctionalComponent<FeatureCardProps> = ({
   }`;
 
   return (
-          <Link href={href}>
-      <div className="clickable" aria-label={`Learn more about ${title}`} onClick={onClick}>
+    <Link href={href}>
+      <div
+        className="clickable"
+        aria-label={`Learn more about ${title}`}
+        onClick={onClick}
+      >
         <article className="card">
-          <img alt={`Icon representing ${title}`} height="100" src={imgSrc} width="100" />
+          <img
+            alt={`Icon representing ${title}`}
+            height="100"
+            src={imgSrc}
+            width="100"
+          />
           <div className="card-content">
-            <h3 className="mt-5 text-sm font-medium leading-6 text-black/75" dangerouslySetInnerHTML={{ __html: matches.title ? highlightText(title, searchQuery) : title }}></h3>
-            <p className="mt-2 text-sm text-black/65 line-clamp-2" dangerouslySetInnerHTML={{ __html: matches.description ? highlightText(description, searchQuery) : description }}></p>
+            <h3
+              className="mt-5 text-sm font-medium leading-6 text-black/75"
+              dangerouslySetInnerHTML={{
+                __html: matches.title
+                  ? highlightText(title, searchQuery)
+                  : title,
+              }}
+            ></h3>
+            <p
+              className="mt-2 text-sm text-black/65 line-clamp-2"
+              dangerouslySetInnerHTML={{
+                __html: matches.description
+                  ? highlightText(description, searchQuery)
+                  : description,
+              }}
+            ></p>
             {searchQuery && matches.detailedDescription && (
               <div className="detail-match-indicator">
-                <span className="text-sm text-blue-500">Article details match</span>
-                <div className="tooltip" dangerouslySetInnerHTML={{ __html: highlightText(detailedDescription, searchQuery) }}></div>
+                <span className="text-sm text-blue-500">
+                  Article details match
+                </span>
+                <div
+                  className="tooltip"
+                  dangerouslySetInnerHTML={{
+                    __html: highlightText(detailedDescription, searchQuery),
+                  }}
+                ></div>
               </div>
             )}
           </div>
