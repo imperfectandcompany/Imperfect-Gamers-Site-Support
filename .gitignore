@@ -82,3 +82,4 @@ coverage/
 .prettiercache
 exportedFiles.txt
 version.txt
+preconfigured.json

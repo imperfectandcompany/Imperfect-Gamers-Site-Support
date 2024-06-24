@@ -4,7 +4,6 @@ import { FunctionalComponent } from "preact";
 import { Link } from "preact-router/match";
 import { generateSlug, highlightText } from "../utils";
 
-
 export interface Card {
   link: string;
   imgSrc: string;
@@ -23,11 +22,10 @@ export interface Card {
 interface FeatureCardProps extends Card {
   category: string;
   onClick: () => void;
-  searchQuery: string;
+  searchQuery: string | null;
 }
 
 export const FeatureCard: FunctionalComponent<FeatureCardProps> = ({
-  category,
   imgSrc,
   title,
   description,
@@ -36,11 +34,8 @@ export const FeatureCard: FunctionalComponent<FeatureCardProps> = ({
   detailedDescription,
   searchQuery,
 }) => {
-  const categorySlug = generateSlug(category);
   const titleSlug = generateSlug(title);
-  const href = `/article${categorySlug ? `/${categorySlug}` : ""}${
-    titleSlug ? `/${titleSlug}` : ""
-  }`;
+  const href = `/article/${titleSlug}`;
 
   return (
     <Link href={href}>
@@ -60,7 +55,7 @@ export const FeatureCard: FunctionalComponent<FeatureCardProps> = ({
             <h3
               className="mt-5 text-sm font-medium leading-6 text-black/75"
               dangerouslySetInnerHTML={{
-                __html: matches.title
+                __html: matches.title && searchQuery
                   ? highlightText(title, searchQuery)
                   : title,
               }}
@@ -68,7 +63,7 @@ export const FeatureCard: FunctionalComponent<FeatureCardProps> = ({
             <p
               className="mt-2 text-sm text-black/65 line-clamp-2"
               dangerouslySetInnerHTML={{
-                __html: matches.description
+                __html: matches.description && searchQuery
                   ? highlightText(description, searchQuery)
                   : description,
               }}

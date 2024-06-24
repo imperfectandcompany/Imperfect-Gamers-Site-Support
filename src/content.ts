@@ -81,43 +81,6 @@ export const content: Content = {
         },
       ],
     },
-    DopeAhhhFeatures: {
-      title: "Ifwewefw",
-      cards: [
-        {
-          link: "#",
-          imgSrc: "https://placehold.co/100x100.png?text=Surf+Maps",
-          title: "Surf Mapfwefwews",
-          description:
-            "Catch the wave with our custom surf maps. No sunscreen required!",
-          detailedDescription:
-            "Surf Maps are custom-designed maps that challenge players to navigate complex environments using surfing techniques. These maps require precision and skill, offering a unique way to improve your control and timing in games.",
-          category: "",
-          slug: "",
-          matches: {
-            title: false, 
-            description: false,
-            detailedDescription: false,
-          },
-        },
-        {
-          link: "#",
-          imgSrc: "https://placehold.co/100x100.png?text=SharpTimer",
-          title: "SharpTimer",
-          description:
-            "Time flies when you're having fun. Learn to keep track with SharpTimer!",
-          detailedDescription:
-            "SharpTimer is an in-game tool that helps you manage your gaming sessions efficiently. It provides real-time updates and alerts to ensure you maintain a healthy balance between gaming and other activities.",
-          category: "",
-          slug: "",
-          matches: {
-            title: false,
-            description: false,
-            detailedDescription: false,
-          },
-        },
-      ],
-    },
     websiteResources: {
       title: "Website Resources",
       cards: [

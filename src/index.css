@@ -492,3 +492,26 @@ body {
   visibility: visible;
   opacity: 1;
 }
+
+/* Add to index.css or a new CSS file */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  color: #4a5568;
+  z-index: 10000 !important;
+}
+.breadcrumb ul {
+  display: flex;
+  list-style: none;
+}
+.breadcrumb li {
+  margin-right: 0.5rem;
+}
+.breadcrumb li a {
+  color: #4a5568;
+  text-decoration: none;
+}
+.breadcrumb li a:hover {
+  text-decoration: underline;
+}

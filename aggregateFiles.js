@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import readline from 'readline';
 
 // Project directory and source directory
 const projectDir = path.resolve();
@@ -8,6 +9,7 @@ const projectDirName = path.basename(projectDir);
 const srcDir = path.join(projectDir, 'src');
 const outputFile = path.join(projectDir, 'exportedFiles.txt');
 const versionFile = path.join(projectDir, 'version.txt');
+const preconfiguredFile = path.join(projectDir, 'preconfigured.json');
 const scriptPath = fileURLToPath(import.meta.url);
 const specificFiles = [
   'index.html',
@@ -28,6 +30,105 @@ const colors = {
 
 const dependenciesMap = new Map();
 const fileTypesMap = new Map();
+
+// Function to get user input from the command line
+const getUserInput = (question) => {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer);
+    });
+  });
+};
+
+// Validate task input
+const validateTask = (task) => {
+  const validTasks = ['onboarding', 'refactoring', 'testing', 'debugging', 'adding', 'removing', 'fixing', 'insights'];
+  return validTasks.includes(task.toLowerCase());
+};
+
+// Function to gather detailed user input and confirm context
+const gatherUserInput = async () => {
+  let task;
+  while (true) {
+    task = await getUserInput('What is the purpose of this script execution? (onboarding/refactoring/testing/debugging/adding/removing/fixing/insights): ');
+    if (validateTask(task)) {
+      break;
+    } else {
+      console.log(`${colors.red}Invalid task. Please enter a valid task.${colors.reset}`);
+    }
+  }
+  
+  const specificMessage = await getUserInput('Please provide any specific message or instruction for the AI (optional): ');
+  const contextConfirmation = await getUserInput('Is this context correct? (yes/no): ');
+
+  if (contextConfirmation.toLowerCase() !== 'yes') {
+    console.log('Please restart the script and provide the correct context.');
+    process.exit(1);
+  }
+
+  return { task, specificMessage };
+};
+
+// Function to read preconfigured data from file
+const readPreconfiguredData = async () => {
+  try {
+    const data = await fs.readFile(preconfiguredFile, 'utf-8');
+    return JSON.parse(data);
+  } catch (error) {
+    return {};
+  }
+};
+
+// Function to write preconfigured data to file
+const writePreconfiguredData = async (data) => {
+  try {
+    await fs.writeFile(preconfiguredFile, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (error) {
+    console.error(`${colors.red}Error writing to preconfigured file: ${error}${colors.reset}`);
+  }
+};
+
+// Function to check for a prefilled code and return corresponding data
+const checkPrefilledCode = async () => {
+  const preconfiguredData = await readPreconfiguredData();
+  let code;
+  let data;
+
+  while (true) {
+    code = await getUserInput('Enter prefilled code if you have one (press Enter to skip): ');
+    if (!code) break;
+
+    if (preconfiguredData[code]) {
+      data = preconfiguredData[code];
+      console.log(`Prefilled data found for code ${code}:`, data);
+      const modify = await getUserInput('Do you want to modify it? (yes/no): ');
+      if (modify.toLowerCase() === 'yes') {
+        const { task, specificMessage } = await gatherUserInput();
+        preconfiguredData[code] = { task, specificMessage };
+        await writePreconfiguredData(preconfiguredData);
+        return { task, specificMessage };
+      }
+      return preconfiguredData[code];
+    } else {
+      console.log(`${colors.red}Invalid code. Please enter a valid prefilled code or press Enter to skip.${colors.reset}`);
+    }
+  }
+
+  const { task, specificMessage } = await gatherUserInput();
+  const save = await getUserInput('Do you want to save this configuration for future use? (yes/no): ');
+  if (save.toLowerCase() === 'yes') {
+    const newCode = await getUserInput('Enter a code to save this configuration: ');
+    preconfiguredData[newCode] = { task, specificMessage };
+    await writePreconfiguredData(preconfiguredData);
+  }
+
+  return { task, specificMessage };
+};
 
 // Function to get the current version from the version file
 const getCurrentVersion = async () => {
@@ -206,6 +307,160 @@ const generateFileTree = async (dir, prefix = '') => {
   return tree;
 };
 
+// Function to gather detailed information based on the task
+const gatherDetailedInfo = async (task) => {
+  let details = {};
+  switch (task) {
+    case 'refactoring':
+      details = {
+        largeFiles: await getUserInput('Do you need to refactor large or complex files? (yes/no): '),
+        reduceDependencies: await getUserInput('Do you need to simplify code by reducing dependencies? (yes/no): '),
+        optimizePerformance: await getUserInput('Do you need to optimize performance-critical sections? (yes/no): '),
+        documentChanges: await getUserInput('Do you need to document refactoring changes? (yes/no): '),
+        specificFile: await getUserInput('Is there a specific file to refactor? (provide file path or leave blank): ')
+      };
+      break;
+    case 'onboarding':
+      details = {
+        codeWalkthrough: await getUserInput('Do you need detailed code walkthroughs? (yes/no): '),
+        unitTests: await getUserInput('Do you need unit tests for key components? (yes/no): '),
+        environmentSetup: await getUserInput('Do you need help with development environment setup? (yes/no): '),
+        documentationReview: await getUserInput('Do you need documentation review? (yes/no): ')
+      };
+      break;
+    case 'problem-solving':
+      details = {
+        problemStatement: await getUserInput('Please provide a detailed problem statement: '),
+        objective: await getUserInput('What is the objective of solving this problem? ')
+      };
+      break;
+    // Add similar cases for other tasks
+    // ...
+  }
+  return details;
+};
+
+// Function to get dependencies of a specific file
+const getFileDependencies = async (filePath) => {
+  try {
+    const content = await fs.readFile(filePath, 'utf-8');
+    return extractDependencies(content);
+  } catch (error) {
+    console.error(`${colors.red}Error reading file ${filePath}: ${error}${colors.reset}`);
+    return [];
+  }
+};
+
+// Function to propose actions based on the task and detailed info
+const proposeActions = async (task, specificMessage, analysisResult, drillDown, details) => {
+  let actionsProposal = `Based on the task '${task}', the following actions are proposed:\n\n`;
+
+  if (drillDown) {
+    switch (task) {
+      case 'refactoring':
+        if (details.largeFiles.toLowerCase() === 'yes') {
+          actionsProposal += '1. Identify and refactor large or complex files.\n';
+        }
+        if (details.reduceDependencies.toLowerCase() === 'yes') {
+          actionsProposal += '2. Simplify code by reducing dependencies.\n';
+        }
+        if (details.optimizePerformance.toLowerCase() === 'yes') {
+          actionsProposal += '3. Optimize performance-critical sections.\n';
+        }
+        if (details.documentChanges.toLowerCase() === 'yes') {
+          actionsProposal += '4. Document refactoring changes.\n';
+        }
+        if (details.specificFile) {
+          const dependencies = await getFileDependencies(details.specificFile);
+          actionsProposal += `5. Refactor specific file: ${details.specificFile}.\n`;
+          actionsProposal += `   Dependencies: ${dependencies.join(', ')}\n`;
+        }
+        break;
+      case 'onboarding':
+        if (details.codeWalkthrough.toLowerCase() === 'yes') {
+          actionsProposal += '1. Conduct detailed code walkthroughs.\n';
+        }
+        if (details.unitTests.toLowerCase() === 'yes') {
+          actionsProposal += '2. Write unit tests for key components.\n';
+        }
+        if (details.environmentSetup.toLowerCase() === 'yes') {
+          actionsProposal += '3. Set up development environment.\n';
+        }
+        if (details.documentationReview.toLowerCase() === 'yes') {
+          actionsProposal += '4. Review documentation.\n';
+        }
+        break;
+      case 'problem-solving':
+        actionsProposal += `1. Define the problem statement: ${details.problemStatement}\n`;
+        actionsProposal += `2. Set the objective: ${details.objective}\n`;
+        actionsProposal += '3. Conduct root cause analysis.\n';
+        actionsProposal += '4. Generate potential solutions.\n';
+        actionsProposal += '5. Evaluate and select the best solution.\n';
+        actionsProposal += '6. Implement the chosen solution.\n';
+        actionsProposal += '7. Monitor and verify the solution’s effectiveness.\n';
+        actionsProposal += '8. Document the problem-solving process and outcomes.\n';
+        break;
+      // Add similar cases for other tasks
+      // ...
+    }
+  } else {
+    actionsProposal += '1. General analysis and recommendations.\n';
+  }
+
+  if (specificMessage) {
+    actionsProposal += `\nSpecific Message: ${specificMessage}\n`;
+  }
+
+  actionsProposal += `\nAnalysis Result:\n${analysisResult}`;
+  return actionsProposal;
+};
+
+// Function to request clarification from the user
+const requestClarification = async (question) => {
+  const clarification = await getUserInput(question);
+  return clarification;
+};
+
+// Function to provide progress updates to the user
+const provideProgressUpdate = (update) => {
+  console.log(`Progress Update: ${update}`);
+};
+
+// Function to handle feedback loop
+const feedbackLoop = async (proposal) => {
+  console.log(`Proposal: ${proposal}`);
+  const userFeedback = await getUserInput('Do you have any feedback or changes to this proposal? (yes/no): ');
+
+  if (userFeedback.toLowerCase() === 'yes') {
+    const feedback = await getUserInput('Please provide your feedback: ');
+    return feedback;
+  }
+
+  return null;
+};
+
+// Function to update version file and script version
+const updateVersion = async () => {
+  const currentVersion = await getCurrentVersion();
+  const newVersion = incrementVersion(currentVersion);
+  await fs.writeFile(versionFile, newVersion);
+
+  const scriptContent = await fs.readFile(scriptPath, 'utf-8');
+  const versionRegex = /const currentScriptVersion = '0.0.21';/;
+  const updatedScriptContent = scriptContent.replace(versionRegex, `const currentScriptVersion = '${newVersion}';`);
+  await fs.writeFile(scriptPath, updatedScriptContent);
+
+  console.log(`${colors.green}Updated to version ${newVersion}${colors.reset}`);
+};
+
+// Function to perform initial analysis
+const initialAnalysis = async () => {
+  console.log('Performing initial analysis...');
+  // Simulate analysis result
+  const analysisResult = 'Analysis result: ...';
+  return analysisResult;
+};
+
 // Function to onboard AI to use the output effectively
 const aiOnboardingInstructions = (version, timestamp) => `
 To strategically use the output of this script, follow these guidelines based on the context provided:
@@ -311,20 +566,7 @@ To strategically use the output of this script, follow these guidelines based on
 Remember to stick to the structure and content provided, and refrain from making unsolicited corrections or additions. Focus on analyzing and understanding the existing content.
 `;
 
-// Function to update version file and script version
-const updateVersion = async () => {
-  const currentVersion = await getCurrentVersion();
-  const newVersion = incrementVersion(currentVersion);
-  await fs.writeFile(versionFile, newVersion);
-
-  const scriptContent = await fs.readFile(scriptPath, 'utf-8');
-  const versionRegex = /const currentScriptVersion = '0.0.5';/;
-  const updatedScriptContent = scriptContent.replace(versionRegex, `const currentScriptVersion = '${newVersion}';`);
-  await fs.writeFile(scriptPath, updatedScriptContent);
-
-  console.log(`${colors.green}Updated to version ${newVersion}${colors.reset}`);
-};
-
+// Main function
 const main = async () => {
   console.log(`${colors.green}Starting process...${colors.reset}`);
   try {
@@ -332,6 +574,13 @@ const main = async () => {
     await updateVersion();
     const currentVersion = await getCurrentVersion();
     const timestamp = new Date().toISOString();
+
+    const { task, specificMessage } = await checkPrefilledCode();
+    provideProgressUpdate(`Task: ${task}`);
+    provideProgressUpdate(`Specific Message: ${specificMessage}`);
+
+    const drillDown = (await getUserInput('Do you want to drill down into detailed actions? (yes/no): ')).toLowerCase() === 'yes';
+    const details = drillDown ? await gatherDetailedInfo(task) : {};
 
     await fs.appendFile(outputFile, `Version: ${currentVersion}\nTimestamp: ${timestamp}\n\n`);
 
@@ -350,6 +599,31 @@ const main = async () => {
     console.log(`${colors.green}Specific files appended.${colors.reset}`);
     console.log(`${colors.green}Exported file contents to ${outputFile}${colors.reset}`);
 
+    const analysisResult = await initialAnalysis();
+    let actionsProposal = await proposeActions(task, specificMessage, analysisResult, drillDown, details);
+
+    provideProgressUpdate('Initial analysis completed.');
+
+    let feedback;
+    do {
+      feedback = await feedbackLoop(actionsProposal);
+
+      if (feedback) {
+        actionsProposal = `Revised Proposal based on feedback:\n${feedback}\n\nOriginal Proposal:\n${actionsProposal}`;
+        provideProgressUpdate('Proposal revised based on feedback.');
+      }
+    } while (feedback);
+
+    const userApproval = await getUserInput('Do you approve these actions? (yes/no): ');
+
+    if (userApproval.toLowerCase() !== 'yes') {
+      console.log('Action proposal not approved. Please restart the script and provide new instructions.');
+      process.exit(1);
+    }
+
+    console.log(`${colors.green}Proceeding with approved actions...${colors.reset}`);
+    // Proceed with the rest of the script based on the approved actions
+
     await summarize();
     await fs.appendFile(outputFile, `\nAI Onboarding Instructions:\n${aiOnboardingInstructions(currentVersion, timestamp)}\n`);
     console.log(`${colors.green}AI onboarding instructions added.${colors.reset}`);
@@ -357,6 +631,5 @@ const main = async () => {
     console.error(`${colors.red}An error occurred: ${error}${colors.reset}`);
   }
 };
-
 
 main();

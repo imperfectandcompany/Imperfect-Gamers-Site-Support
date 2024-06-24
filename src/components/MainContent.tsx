@@ -15,7 +15,7 @@ interface MainContentProps {
   sections: { [key: string]: SectionData };
   totalResults: number;
   isSearching: boolean;
-  searchQuery: string;
+  searchQuery: string | null;
   onCardClick: (item: Card) => void;
   currentItemCount: number;
 }
@@ -31,7 +31,7 @@ export const MainContent: FunctionalComponent<MainContentProps> = ({
   let searchMessage = "Hi, how can we help you?";
   if (isSearching) {
     searchMessage = "Searching...";
-  } else if (searchQuery) {
+  } else if (searchQuery || searchQuery === null) {
     searchMessage =
       totalResults === 0
         ? "No results found."

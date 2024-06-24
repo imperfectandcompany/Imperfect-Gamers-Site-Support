@@ -1,0 +1,48 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Header > matches the snapshot 1`] = `
+<DocumentFragment>
+  <header
+    class="flex justify-between items-center px-4"
+  >
+    <div
+      class="flex items-center cursor-pointer z-30"
+    >
+      <a
+        class=""
+        href="/"
+      >
+        <img
+          alt="Imperfect Gamers Logo, a gaming community"
+          src="https://cdn.imperfectgamers.org/inc/assets/img/logo.svg"
+          style="height: 60px;"
+        />
+      </a>
+    </div>
+    <div
+      class="flex space-x-4"
+    >
+      <input
+        class="block w-full h-10 px-4 py-3 text-indigo-300 border rounded-lg appearance-none focus:border-stone-300 focus:outline-none focus:ring-stone-300 sm:text-sm pr-14"
+        placeholder="Search..."
+        type="text"
+      />
+      <a
+        aria-label="Categories"
+        class="flex items-center justify-center w-auto h-10 px-4 py-2 text-sm font-semibold text-white transition-all rounded-lg hover:to-indigo-600 bg-gradient-to-b from-indigo-300 via-indigo-400 to-indigo-500 outline-none"
+        href="/categories"
+      >
+        Categories
+      </a>
+      <button
+        aria-label="Contact us for help"
+        class="flex items-center justify-center w-auto h-10 px-4 py-2 text-sm font-semibold text-white transition-all rounded-lg hover:to-indigo-600 bg-gradient-to-b from-indigo-300 via-indigo-400 to-indigo-500 outline-none"
+      >
+        <span>
+          Contact
+        </span>
+      </button>
+    </div>
+  </header>
+</DocumentFragment>
+`;

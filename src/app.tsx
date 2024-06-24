@@ -1,4 +1,4 @@
-// src/app.tsx
+// src/App.tsx
 
 import { Router, route } from "preact-router";
 import { useEffect, useReducer, useState } from "preact/hooks";
@@ -14,8 +14,16 @@ import { SectionData, MainContent } from "./components/MainContent";
 import { NotFound } from "./components/NotFound";
 import Home from "./components/Home";
 
-export interface AppState {
+interface HomeProps {
+  path: string;
+  onCardClick: (item?: Card) => void;
   searchQuery: string;
+  isSearching: boolean;
+  currentItemCount: number;
+}
+
+export interface AppState {
+  searchQuery: string | null;
   isSearching: boolean;
   selectedItem: Card | null;
   currentItemCount: number;
@@ -40,6 +48,12 @@ export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case "UPDATE_SEARCH":
       return { ...state, searchQuery: action.value ?? "", isSearching: true };
+    case "NO_RESULTS_FOUND":
+      return {
+        ...state,
+        searchQuery: action.value ?? null,
+        isSearching: false,
+      };
     case "CLEAR_SEARCH":
       return {
         ...state,
@@ -54,7 +68,7 @@ export function reducer(state: AppState, action: Action): AppState {
         ...state,
         selectedItem: action.item ?? null,
         isSearching: false,
-        searchQuery: "",
+        searchQuery: null,
       }; // Clear searchQuery when item is selected
     case "UNSELECT_ITEM":
       return { ...state, selectedItem: null };
@@ -103,13 +117,39 @@ export function App(): VNode {
     const handleRouteChange = () => {
       const path = window.location.pathname;
       const queryParams = new URLSearchParams(window.location.search);
-      const searchQueryFromURL = queryParams.get("query");
-      if (path.startsWith("/search") && searchQueryFromURL) {
-        dispatch({ type: "UPDATE_SEARCH", value: searchQueryFromURL });
-      } else if (path === "/" || path.startsWith("/article/")) {
-        dispatch({ type: "CLEAR_SEARCH" });
+      const searchQueryFromURL = queryParams.get("query") || "";
+
+      // Regex to identify empty or malformed search queries
+      const emptyOrMalformedQueryRegex = /^$|^\s*$|^\?|query=?$/;
+
+      if (path.startsWith("/search")) {
+        if (
+          emptyOrMalformedQueryRegex.test(searchQueryFromURL) ||
+          path === "/search" ||
+          path === "search?query" ||
+          path === "search?" ||
+          path === "search?="
+        ) {
+          // Dispatch an action to handle the empty search query scenario
+          dispatch({ type: "NO_RESULTS_FOUND" });
+        }
       }
-      // Add any other route-specific logic here
+
+      if (path === "/" || path.startsWith("/article/")) {
+        dispatch({ type: "CLEAR_SEARCH" });
+        dispatch({ type: "STOP_SEARCH" });
+      } else if (searchQueryFromURL) {
+        dispatch({ type: "UPDATE_SEARCH", value: searchQueryFromURL });
+        // Ensure the search input is pre-filled and search is initiated
+        if (
+          path.startsWith("/search") &&
+          searchQueryFromURL !== state.searchQuery
+        ) {
+          dispatch({ type: "START_SEARCH", value: searchQueryFromURL });
+        }
+      } else {
+        dispatch({ type: "STOP_SEARCH" });
+      }
     };
 
     // Call handleRouteChange on mount and on every popstate event
@@ -188,11 +228,8 @@ export function App(): VNode {
 
   return (
     <div className="flex flex-col min-h-screen mx-auto py-8 max-w-screen-xl">
-
-
       <div class="flex flex-col w-full gap-2 mb-10">
-      <div class="relative bg-gradient-to-b from-indigo-500 via-indigo-500/5 to-indigo-500/10 shadow-lg rounded-lg p-1 mx-4 sm:mx-6 md:mx-8 lg:mx-10 xl:mx-4">
-
+        <div class="relative bg-gradient-to-b from-indigo-500 via-indigo-500/5 to-indigo-500/10 shadow-lg rounded-lg p-1 mx-4 sm:mx-6 md:mx-8 lg:mx-10 xl:mx-4">
           <div className="bg-blue-900 text-white text-center p-4 rounded-lg">
             <button
               className="absolute top-3 right-3 text-indigo-300 hover:text-indigo-500"
@@ -209,10 +246,18 @@ export function App(): VNode {
               &#x2715;
             </button>
             <p className="text-xs sm:text-sm md:text-base">
-              <span className="font-medium text-indigo-50">Update:</span> <span className="text-indigo-100">Fri, Jun 21, 2024</span><br></br>
+              <span className="font-medium text-indigo-50">Update:</span>{" "}
+              <span className="text-indigo-100">Fri, Jun 21, 2024</span>
+              <br />
               This site is currently a work in progress. For immediate
               assistance, please visit our discord at{" "}
-              <a href="https://imperfectgamers.org/discord/" class="text-indigo-300 hover:text-indigo-500">https://imperfectgamers.org/discord/</a>. 
+              <a
+                href="https://imperfectgamers.org/discord/"
+                class="text-indigo-300 hover:text-indigo-500"
+              >
+                https://imperfectgamers.org/discord/
+              </a>
+              .
             </p>
             <p class="text-right text-xs mt-1 sm:text-sm italic">
               - Imperfect Gamers Team
@@ -225,6 +270,7 @@ export function App(): VNode {
         onSearchChange={handleSearchChange}
         onLogoClick={() => dispatch({ type: "CLEAR_SEARCH" })}
         searchQuery={state.searchQuery}
+        onCategoryClick={() => dispatch({ type: "CLEAR_SEARCH" })}
       />
       <main className="flex-1 relative">
         <Router>
@@ -234,6 +280,7 @@ export function App(): VNode {
             searchQuery={state.searchQuery}
             isSearching={state.isSearching}
             currentItemCount={state.currentItemCount}
+            onBreadcrumbClick={() => dispatch({ type: "CLEAR_SEARCH" })}
           />
           <Home
             path="/search"
@@ -241,9 +288,18 @@ export function App(): VNode {
             searchQuery={state.searchQuery}
             isSearching={state.isSearching}
             currentItemCount={state.currentItemCount}
+            onBreadcrumbClick={() => dispatch({ type: "NO_RESULTS_FOUND" })}
+            onBreadcrumbClickHome={() => dispatch({ type: "CLEAR_SEARCH" })}
           />
-          <Article path="/article/:id" lastRoute={state.lastRoute || "/"} />
-          <Categories path="/categories" />
+          <Article
+            path="/article/:id"
+            lastRoute={state.lastRoute || "/"}
+            onBreadcrumbClick={() => dispatch({ type: "CLEAR_SEARCH" })}
+          />
+          <Categories
+            path="/categories"
+            onBreadcrumbClick={() => dispatch({ type: "CLEAR_SEARCH" })}
+          />
           <CategoryItems
             path="/category/:categorySlug"
             categorySlug=""

@@ -3,11 +3,14 @@
 import { content } from "../content";
 import { MainContent, SectionData } from "./MainContent";
 import { Card } from "./FeatureCard";
+import Breadcrumb from "./Breadcrumb";
 
 interface HomeProps {
   path: string;
   onCardClick: (item?: Card) => void;
-  searchQuery: string;
+  onBreadcrumbClick: () => void;
+  onBreadcrumbClickHome?: () => void;
+  searchQuery: string | null;
   isSearching: boolean;
   currentItemCount: number;
 }
@@ -17,6 +20,9 @@ const Home = ({
   searchQuery,
   isSearching,
   currentItemCount,
+  path,
+  onBreadcrumbClick,
+  onBreadcrumbClickHome
 }: HomeProps) => {
   const filteredSections = Object.keys(content.sections).reduce<{
     [key: string]: SectionData;
@@ -25,11 +31,9 @@ const Home = ({
     const filteredCards = section.cards
       .map((card) => {
         const matches = {
-          title: card.title.toLowerCase().includes(searchQuery),
-          description: card.description.toLowerCase().includes(searchQuery),
-          detailedDescription: card.detailedDescription
-            .toLowerCase()
-            .includes(searchQuery),
+          title: ((searchQuery || searchQuery === "") && searchQuery !== null) ? card.title.toLowerCase().includes(searchQuery.toLowerCase()) : false,
+          description: ((searchQuery || searchQuery === "") && searchQuery !== null) ? card.description.toLowerCase().includes(searchQuery.toLowerCase()) : false,
+          detailedDescription: ((searchQuery || searchQuery === "") && searchQuery !== null) ? card.detailedDescription.toLowerCase().includes(searchQuery.toLowerCase()) : false,
         };
         return { ...card, matches };
       })
@@ -48,14 +52,21 @@ const Home = ({
   );
 
   return (
-    <MainContent
-      sections={filteredSections}
-      totalResults={totalResults}
-      isSearching={isSearching}
-      searchQuery={searchQuery}
-      onCardClick={onCardClick}
-      currentItemCount={currentItemCount}
-    />
+    <div>
+      {(path.startsWith("/search") || isSearching) && (
+        <Breadcrumb path={"/search"} onBreadcrumbClick={onBreadcrumbClick}
+        onBreadcrumbClickHome={onBreadcrumbClickHome}
+        />
+      )}
+      <MainContent
+        sections={filteredSections}
+        totalResults={totalResults}
+        isSearching={isSearching}
+        searchQuery={searchQuery}
+        onCardClick={onCardClick}
+        currentItemCount={currentItemCount}
+      />
+    </div>
   );
 };
 

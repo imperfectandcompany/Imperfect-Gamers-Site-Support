@@ -27,7 +27,7 @@ interface SectionData {
 interface SectionProps {
   data: SectionData;
   onCardClick: (item: Card) => void;
-  searchQuery: string; // Add searchQuery prop
+  searchQuery: string | null; // Add searchQuery prop
 }
 
 export const Section: FunctionalComponent<SectionProps> = ({
