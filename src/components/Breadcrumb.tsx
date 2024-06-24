@@ -14,7 +14,13 @@ interface BreadcrumbProps {
   onBreadcrumbClickHome?: () => void;
 }
 
-const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({ path, categorySlug, articleId, onBreadcrumbClick, onBreadcrumbClickHome }) => {
+const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
+  path,
+  categorySlug,
+  articleId,
+  onBreadcrumbClick,
+  onBreadcrumbClickHome
+}) => {
   let category = null;
   let article: Card | null = null;
 
@@ -40,15 +46,15 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({ path, categorySlug, 
 
   breadcrumbItems.push(
     <li key="home" className="inline">
-      <Link href="/" onClick={onBreadcrumbClickHome}>Home</Link>
+      <Link href="/" className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClickHome}>Home</Link>
     </li>
   );
 
   if (path.startsWith("/search")) {
     breadcrumbItems.push(
       <li key="search" className="inline">
-        <span> / </span>
-        <Link href="/search?query=" onClick={onBreadcrumbClick}>Search</Link>
+        <span className="mx-2 text-gray-500">/</span>
+        <Link href="/search?query=" className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>Search</Link>
       </li>
     );
   }
@@ -56,8 +62,8 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({ path, categorySlug, 
   if (path === "/categories" || category) {
     breadcrumbItems.push(
       <li key="categories" className="inline">
-        <span> / </span>
-        <Link href="/categories" onClick={onBreadcrumbClick}>Categories</Link>
+        <span className="mx-2 text-gray-500">/</span>
+        <Link href="/categories" className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>Categories</Link>
       </li>
     );
   }
@@ -65,8 +71,8 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({ path, categorySlug, 
   if (category) {
     breadcrumbItems.push(
       <li key={`category-${categorySlug}`} className="inline">
-        <span> / </span>
-        <Link href={`/category/${categorySlug}`} onClick={onBreadcrumbClick}>{category.title}</Link>
+        <span className="mx-2 text-gray-500">/</span>
+        <Link href={`/category/${categorySlug}`} className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>{category.title}</Link>
       </li>
     );
   }
@@ -74,17 +80,17 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({ path, categorySlug, 
   if (article) {
     breadcrumbItems.push(
       <li key={`article-${articleId}`} className="inline font-bold">
-        <span> / </span>
+        <span className="mx-2 text-gray-500">/</span>
         {article.title}
       </li>
     );
   }
 
   return (
-    <div className="flex z-30">
-      <nav className="breadcrumb text-gray-700 text-sm mb-4 z-30">
-        <ul className="inline">{breadcrumbItems}</ul>
-      </nav>
+    <div className="z-30 flex flex-col">
+    <nav className="bg-white py-3 px-5 md:rounded-md my-4 opacity-80 z-30">
+      <ul className="flex flex-wrap ml-2 md:ml-8 text-xs sm:text-sm md:text-md lg:text-lg text-gray-600">{breadcrumbItems}</ul>
+    </nav>
     </div>
   );
 };

@@ -93,9 +93,11 @@ export const MainContent: FunctionalComponent<MainContentProps> = ({
         </defs>
       </svg>
       <div className="container mx-auto relative px-8 py-16 max-w-7xl md:px-12 lg:px-18 lg:py-22">
-        <span className="text-xs font-medium tracking-widest text-transparent uppercase bg-clip-text bg-gradient-to-r from-indigo-300 via-indigo-400 to-indigo-500">
-          Help Center
-        </span>
+        {searchQuery || searchQuery === null ? null : (
+          <span className="text-xs font-medium tracking-widest text-transparent uppercase bg-clip-text bg-gradient-to-r from-indigo-300 via-indigo-400 to-indigo-500">
+            Help Center
+          </span>
+        )}
         <p
           className={`mt-8 text-3xl ${
             isSearching && "transition animate-pulse"

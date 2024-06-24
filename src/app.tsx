@@ -227,9 +227,8 @@ export function App(): VNode {
   }
 
   return (
-    <div className="flex flex-col min-h-screen mx-auto py-8 max-w-screen-xl">
-      <div class="flex flex-col w-full gap-2 mb-10">
-        <div class="relative bg-gradient-to-b from-indigo-500 via-indigo-500/5 to-indigo-500/10 shadow-lg rounded-lg p-1 mx-4 sm:mx-6 md:mx-8 lg:mx-10 xl:mx-4">
+    <div className="flex flex-col min-h-screen mx-auto md:py-8 max-w-screen-xl">
+        <div class="relative my-8 md:my-0 bg-gradient-to-b from-indigo-500 via-indigo-500/5 to-indigo-500/10 shadow-lg rounded-lg p-1 mx-4 sm:mx-6 md:mx-8 lg:mx-10 xl:mx-4">
           <div className="bg-blue-900 text-white text-center p-4 rounded-lg">
             <button
               className="absolute top-3 right-3 text-indigo-300 hover:text-indigo-500"
@@ -263,7 +262,6 @@ export function App(): VNode {
               - Imperfect Gamers Team
             </p>
           </div>
-        </div>
       </div>
 
       <Header
