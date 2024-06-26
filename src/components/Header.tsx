@@ -2,6 +2,7 @@
 
 import { FunctionalComponent } from "preact";
 import { Link } from "preact-router/match";
+import { useState, useEffect } from "preact/hooks";
 
 interface HeaderProps {
   onSearchChange: (event: Event) => void;
@@ -16,8 +17,22 @@ export const Header: FunctionalComponent<HeaderProps> = ({
   onCategoryClick,
   searchQuery,
 }) => {
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+
+
+  useEffect(() => {
+    const handleLocationChange = () => {
+      setCurrentPath(window.location.pathname);
+    };
+
+    window.addEventListener("popstate", handleLocationChange);
+
+    return () => {
+      window.removeEventListener("popstate", handleLocationChange);
+    };
+  }, []);
   return (
-    <header className="flex flex-wrap items-end md:items-center justify-between px-4 py-3 ite shadow-sm sm:px-6 md:px-8 lg:px-10 xl:px-12">
+    <header className="flex flex-wrap  md:items-center justify-between px-4 py-3 ite shadow-sm sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <div className="flex items-center cursor-pointer z-30">
         <Link href="/" onClick={onLogoClick}>
           <img
@@ -28,22 +43,20 @@ export const Header: FunctionalComponent<HeaderProps> = ({
         </Link>
       </div>
       <div className="flex items-center space-x-4 mt-3 sm:mt-0">
+        <Link
+          href="/categories"
+          className={`flex items-center hidden md:block px-4 py-3 text-indigo-300 ${currentPath === '/categories' ? 'hidden' : ''}`}
+          onClick={onCategoryClick}
+        >
+          Categories
+        </Link>
         <input
           type="text"
           placeholder="Search..."
           value={searchQuery ?? ""}
           onInput={onSearchChange}
-          className="block w-full max-w-xs h-10 px-4 py-2 text-indigo-300 border rounded-lg appearance-none focus:border-stone-300 focus:outline-none focus:ring-stone-300 sm:text-sm"
-
+          className="block w-full items-center max-w-xs h-10 px-4 py-2 text-indigo-300 border rounded-lg appearance-none focus:border-stone-300 focus:outline-none focus:ring-stone-300 sm:text-sm"
         />
-        <Link
-          href="/categories"
-          className="flex items-center h-10 px-4 py-3 text-indigo-300 border rounded-lg appearance-none focus:border-stone-300 focus:outline-none focus:ring-stone-300 sm:text-sm transition duration-150 ease-in-out hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600"
-
-          onClick={onCategoryClick}
-        >
-          Categories
-        </Link>
       </div>
     </header>
   );

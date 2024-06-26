@@ -29,3 +29,11 @@ export function highlightText(text: string, query: string): string {
     )
     .join("");
 }
+
+export const getElementPosition = (element: HTMLElement): { x: number, y: number } => {
+  const rect = element.getBoundingClientRect();
+  return {
+    x: rect.left + window.scrollX,
+    y: rect.top + window.scrollY,
+  };
+};

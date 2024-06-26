@@ -446,7 +446,7 @@ const updateVersion = async () => {
   await fs.writeFile(versionFile, newVersion);
 
   const scriptContent = await fs.readFile(scriptPath, 'utf-8');
-  const versionRegex = /const currentScriptVersion = '0.0.21';/;
+  const versionRegex = /const currentScriptVersion = '0.0.25';/;
   const updatedScriptContent = scriptContent.replace(versionRegex, `const currentScriptVersion = '${newVersion}';`);
   await fs.writeFile(scriptPath, updatedScriptContent);
 

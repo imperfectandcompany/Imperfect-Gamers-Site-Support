@@ -1,7 +1,7 @@
-// src/components/DetailView.tsx
-
 import { FunctionalComponent } from "preact";
 import { Card } from "./FeatureCard";
+import { renderContent } from "../contentRenderer";
+import { parseContent } from "../contentParser";
 
 interface DetailViewProps {
   item: Card;
@@ -12,10 +12,12 @@ export const ArticleView: FunctionalComponent<DetailViewProps> = ({
   item,
   onBack,
 }) => {
+  const contentElements = parseContent(item.detailedDescription);
+
   return (
     <>
       <svg
-        className="absolute blur-3xl opacity-30 right-96 -mt-96"
+        className="absolute blur-3xl opacity-30 right-96 -mt-96 z-0"
         width="70%"
         height="70%"
         viewBox="0 0 400 400"
@@ -66,7 +68,7 @@ export const ArticleView: FunctionalComponent<DetailViewProps> = ({
           </filter>
         </defs>
       </svg>
-      <div className="px-8 py-32 mx-auto max-w-7xl md:px-12 lg:px-18 lg:py-22">
+      <div className="px-8 py-32 mx-auto max-w-7xl md:px-12 lg:px-18 lg:py-22 relative z-20">
         <div className="detail-view px-4 py-4">
           <button
             className="mt-2 px-6 py-2 bg-black/15 rounded hover:cursor-pointer focus:cursor-auto focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all duration-300 ease-in-out !z-20"
@@ -77,7 +79,9 @@ export const ArticleView: FunctionalComponent<DetailViewProps> = ({
           <h1 className="mt-8 text-4xl font-normal tracking-tighter text-black/75 sm:text-5xl">
             {item.title}
           </h1>
-          <p className="detail-description mt-4">{item.detailedDescription}</p>
+          <div className="detail-description mt-4">
+            {renderContent(contentElements)}
+          </div>
         </div>
       </div>
     </>

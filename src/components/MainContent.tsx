@@ -4,6 +4,8 @@ import { FunctionalComponent } from "preact";
 import { SkeletonLoader } from "./SkeletonLoader";
 import { Card } from "./FeatureCard";
 import { Section } from "./Section";
+import { route } from "preact-router";
+import { generateSlug } from "../utils";
 
 export interface SectionData {
   title: string;
@@ -37,6 +39,13 @@ export const MainContent: FunctionalComponent<MainContentProps> = ({
         ? "No results found."
         : `Found ${totalResults} result${totalResults > 1 ? "s" : ""}.`;
   }
+
+
+
+
+  const onCategoryClick = (event: MouseEvent) => {
+
+  };
 
   return (
     <>
@@ -93,30 +102,39 @@ export const MainContent: FunctionalComponent<MainContentProps> = ({
         </defs>
       </svg>
       <div className="container mx-auto relative px-8 py-16 max-w-7xl md:px-12 lg:px-18 lg:py-22">
-        {searchQuery || searchQuery === null ? null : (
+        {searchQuery || searchQuery === null ? (
           <span className="text-xs font-medium tracking-widest text-transparent uppercase bg-clip-text bg-gradient-to-r from-indigo-300 via-indigo-400 to-indigo-500">
             Help Center
           </span>
-        )}
-        <p
-          className={`mt-8 text-3xl ${
-            isSearching && "transition animate-pulse"
-          } font-normal tracking-tighter text-black sm:text-4xl lg:text-5xl`}
-        >
+        ) : null}
+        <p className={`mt-8 text-3xl ${isSearching && "transition animate-pulse"} font-normal tracking-tighter text-black sm:text-4xl lg:text-5xl`}>
           {searchMessage}
         </p>
         <div className="additional-image mt-8" aria-hidden="true"></div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
           {isSearching ? (
             <SkeletonLoader sections={sections} count={currentItemCount} />
-          ) : (
+          ) : searchQuery ? (
             Object.values(sections).map((section) => (
               <Section
                 key={section.title}
                 data={section}
                 onCardClick={onCardClick}
-                searchQuery={searchQuery} // Pass searchQuery to Section
+                searchQuery={searchQuery}
               />
+            ))
+          ) : (
+            // Map categories directly here
+            Object.keys(sections).map((category) => (
+<div
+  key={category}
+  className="category-card bg-white hover:bg-blue-100 cursor-pointer shadow-md hover:shadow-lg rounded-lg p-4 transition duration-200 ease-in-out transform hover:-translate-y-1"
+  onClick={() => route(`/category/${generateSlug(sections[category].title)}`)}
+>
+  <h3 className="text-xl font-bold text-gray-800">{sections[category].title}</h3>
+  <p className="text-sm text-gray-600">{sections[category].cards.length} {sections[category].cards.length === 1 ? 'article' : 'articles'}</p>
+</div>
+
             ))
           )}
         </div>

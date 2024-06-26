@@ -17,7 +17,17 @@ body {
   height: 100vh;
   overflow-y: scroll;
 }
+
+
+.card:active::after {
+  background: rgba(0, 0, 0, 0.2); /* Visual feedback for active press */
+}
+
 .card {
+  font-size: 16px; /* Ensures readability on all devices */
+  position: relative;
+  cursor: pointer;
+  overflow: visible; /* Ensure this is visible to show the dropdown */
   background-color: #ffffff;
   border: 1px solid #ccc;
   border-radius: 12px;
@@ -28,6 +38,17 @@ body {
   transition: transform 0.3s ease-in-out;
   cursor: pointer;
   margin-bottom: 20px;
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0);
+  transition: background-color 1.5s;
 }
 .card:hover {
   transform: translateY(-5px);
@@ -49,7 +70,8 @@ body {
   font-size: 1rem;
 }
 .detail-view {
-  background-color: #f9f9f9;
+  background-color: rgba(249, 249, 249, 0.8); /* Semi-transparent white */
+
   padding: 20px;
   border-radius: 12px;
   margin-top: 20px;
@@ -459,6 +481,97 @@ body {
   color: inherit;
 }
 
+
+.detail-description p {
+  margin: 1em 0;
+}
+
+.detail-description h1, .detail-description h2, .detail-description h3,
+.detail-description h4, .detail-description h5, .detail-description h6 {
+  margin: 1.5em 0 1em 0;
+  font-weight: bold;
+}
+
+.detail-description img {
+  max-width: 100%;
+  height: auto;
+}
+
+.detail-description ul, .detail-description ol {
+  padding-left: 1.5em;
+  margin: 1em 0;
+}
+
+.detail-description li {
+  margin: 0.5em 0;
+}
+
+.detail-description pre {
+  background-color: #f4f4f4;
+  padding: 1em;
+  overflow-x: auto;
+  border-radius: 5px;
+}
+
+.detail-description code {
+  background-color: #f4f4f4;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.detail-description mark {
+  background-color: yellow;
+}
+
+.detail-description {
+  color: var(--tw-detail-body);
+  max-width: 65ch;
+}
+
+.detail-description p {
+  margin: 1em 0;
+}
+
+.detail-description h1, .detail-description h2, .detail-description h3,
+.detail-description h4, .detail-description h5, .detail-description h6 {
+  margin: 1.5em 0 1em 0;
+  font-weight: bold;
+}
+
+.detail-description img {
+  max-width: 100%;
+  height: auto;
+}
+
+.detail-description ul, .detail-description ol {
+  padding-left: 1.5em;
+  margin: 1em 0;
+}
+
+.detail-description li {
+  margin: 0.5em 0;
+}
+
+.detail-description pre {
+  background-color: #f4f4f4;
+  padding: 1em;
+  overflow-x: auto;
+  border-radius: 5px;
+}
+
+.detail-description code {
+  background-color: #f4f4f4;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.detail-description mark {
+  background-color: yellow;
+}
+
+
 .highlight {
   background-color: yellow;
   font-weight: bold;
@@ -515,3 +628,65 @@ body {
 .breadcrumb li a:hover {
   text-decoration: underline;
 }
+
+.context-menu {
+  position: fixed;
+  max-width: 200px;
+  z-index: 1000;
+  border: 1px solid #ccc;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 10px;
+  background: white;
+  transition: opacity 0.3s, visibility 0.3s;
+  visibility: hidden; /* Start hidden */
+  opacity: 0;
+}
+.context-menu button {
+  background: none;
+  border: none;
+  color: #333;
+  text-align: left;
+  font-size: 16px;
+  padding: 5px 10px;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.context-menu button:hover {
+  background-color: #f0f0f0;
+}
+
+/* Micro-interactions for touch devices */
+.context-menu button:active {
+  background-color: #ddd;
+}
+
+/* Display the context menu on the active class */
+.context-menu-active {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
+}
+
+.card {
+  transition: transform 0.3s ease-in-out;
+  margin: 20px; /* Provides space around cards */
+}
+
+@media (max-width: 768px) {
+  .card {
+    font-size: 14px; /* Slightly smaller font on mobile devices */
+  }
+  .context-menu {
+    width: 90%; /* Full width for smaller screens */
+    transform: translate(-50%, 0); /* Adjust positioning */
+  }
+}
+
+
+
+
+
+
