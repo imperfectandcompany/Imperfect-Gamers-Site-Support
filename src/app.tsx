@@ -13,14 +13,7 @@ import { Header } from "./components/Header";
 import { SectionData, MainContent } from "./components/MainContent";
 import { NotFound } from "./components/NotFound";
 import Home from "./components/Home";
-
-interface HomeProps {
-  path: string;
-  onCardClick: (item?: Card) => void;
-  searchQuery: string;
-  isSearching: boolean;
-  currentItemCount: number;
-}
+import Admin from "./components/Admin";
 
 export interface AppState {
   searchQuery: string | null;
@@ -228,40 +221,40 @@ export function App(): VNode {
 
   return (
     <div className="flex flex-col min-h-screen mx-auto md:py-8 max-w-screen-xl">
-        <div class="relative my-8 md:my-0 bg-gradient-to-b from-indigo-500 via-indigo-500/5 to-indigo-500/10 shadow-lg rounded-lg p-1 mx-4 sm:mx-6 md:mx-8 lg:mx-10 xl:mx-4">
-          <div className="bg-blue-900 text-white text-center p-4 rounded-lg">
-            <button
-              className="absolute top-3 right-3 text-indigo-300 hover:text-indigo-500"
-              onClick={(e) => {
-                const parentElement = e.currentTarget.parentElement;
-                if (parentElement) {
-                  const grandParentElement = parentElement.parentElement;
-                  if (grandParentElement) {
-                    grandParentElement.style.display = "none";
-                  }
+      <div class="relative my-8 md:my-0 bg-gradient-to-b from-indigo-500 via-indigo-500/5 to-indigo-500/10 shadow-lg rounded-lg p-1 mx-4 sm:mx-6 md:mx-8 lg:mx-10 xl:mx-4">
+        <div className="bg-blue-900 text-white text-center p-4 rounded-lg">
+          <button
+            className="absolute top-3 right-3 text-indigo-300 hover:text-indigo-500"
+            onClick={(e) => {
+              const parentElement = e.currentTarget.parentElement;
+              if (parentElement) {
+                const grandParentElement = parentElement.parentElement;
+                if (grandParentElement) {
+                  grandParentElement.style.display = "none";
                 }
-              }}
+              }
+            }}
+          >
+            &#x2715;
+          </button>
+          <p className="text-xs sm:text-sm md:text-base">
+            <span className="font-medium text-indigo-50">Update:</span>{" "}
+            <span className="text-indigo-100">Fri, Jun 21, 2024</span>
+            <br />
+            This site is currently a work in progress. For immediate assistance,
+            please visit our discord at{" "}
+            <a
+              href="https://imperfectgamers.org/discord/"
+              class="text-indigo-300 hover:text-indigo-500"
             >
-              &#x2715;
-            </button>
-            <p className="text-xs sm:text-sm md:text-base">
-              <span className="font-medium text-indigo-50">Update:</span>{" "}
-              <span className="text-indigo-100">Fri, Jun 21, 2024</span>
-              <br />
-              This site is currently a work in progress. For immediate
-              assistance, please visit our discord at{" "}
-              <a
-                href="https://imperfectgamers.org/discord/"
-                class="text-indigo-300 hover:text-indigo-500"
-              >
-                https://imperfectgamers.org/discord/
-              </a>
-              .
-            </p>
-            <p class="text-right text-xs mt-1 sm:text-sm italic">
-              - Imperfect Gamers Team
-            </p>
-          </div>
+              https://imperfectgamers.org/discord/
+            </a>
+            .
+          </p>
+          <p class="text-right text-xs mt-1 sm:text-sm italic">
+            - Imperfect Gamers Team
+          </p>
+        </div>
       </div>
 
       <Header
@@ -303,6 +296,7 @@ export function App(): VNode {
             categorySlug=""
             onCardClick={handleCardClick} // Pass handleCardClick to CategoryItems
           />
+          <Admin path="/admin" />
           <NotFound default />
         </Router>
       </main>
