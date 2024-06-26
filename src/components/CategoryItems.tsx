@@ -1,9 +1,9 @@
 // src/components/CategoryItems.tsx
 
 import { FunctionalComponent } from 'preact';
-import { content } from '../content';
+import { Card, content } from '../content';
 import { generateSlug } from '../utils';
-import { Card, FeatureCard } from './FeatureCard';
+import { FeatureCard } from './FeatureCard';
 import Breadcrumb from './Breadcrumb';
 
 interface CategoryItemsProps {
@@ -35,7 +35,6 @@ export const CategoryItems: FunctionalComponent<
             <FeatureCard
               key={card.title}
               title={card.title}
-              link={card.link}
               imgSrc={card.imgSrc}
               description={card.description}
               detailedDescription={card.detailedDescription}
@@ -44,6 +43,8 @@ export const CategoryItems: FunctionalComponent<
               matches={card.matches}
               searchQuery={""} // No search query in this context
               onClick={() => onCardClick(card)} // Use onCardClick with the card
+              archived={card.archived} // Add the archived property
+              staffOnly={card.staffOnly} // Add the staffOnly property
             />
           ))}
         </div>

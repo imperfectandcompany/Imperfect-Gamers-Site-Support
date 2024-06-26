@@ -1,7 +1,7 @@
 import { FunctionalComponent } from "preact";
-import { Card } from "./FeatureCard";
 import { renderContent } from "../contentRenderer";
 import { parseContent } from "../contentParser";
+import { Card } from "../content";
 
 interface DetailViewProps {
   item: Card;

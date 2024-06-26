@@ -6,22 +6,7 @@ import { useEffect, useState, useRef } from "preact/hooks";
 import { route } from "preact-router";
 import { ContextMenu, useClickAway } from "./ContextMenu";
 import { isFeatureEnabled } from "../featureFlags"; // Import the feature flag utility
-
-export interface Card {
-  link: string;
-  imgSrc: string;
-  description: string;
-  detailedDescription: string;
-  title: string;
-  category: string;
-  slug: string;
-  showImage?: boolean; // Optional prop to control image display
-  matches: {
-    title: boolean;
-    description: boolean;
-    detailedDescription: boolean;
-  };
-}
+import { Card } from "../content";
 
 interface FeatureCardProps extends Card {
   category: string;

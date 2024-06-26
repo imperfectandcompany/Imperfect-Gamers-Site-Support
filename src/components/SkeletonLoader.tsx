@@ -1,17 +1,8 @@
 /** src/components/SkeletonLoader.tsx **/
 
 import { Fragment, FunctionalComponent } from "preact";
+import { SectionData } from "./MainContent";
 
-interface SectionData {
-  title: string;
-  cards: {
-    link: string;
-    imgSrc: string;
-    title: string;
-    description: string;
-    detailedDescription: string;
-  }[];
-}
 
 interface SkeletonLoaderProps {
   sections: { [key: string]: SectionData };

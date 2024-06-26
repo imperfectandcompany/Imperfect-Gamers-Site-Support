@@ -1,11 +1,13 @@
 import { useState } from "preact/hooks";
 import { content } from "../content";
+import { FunctionalComponent } from "preact";
 
-const Admin = () => {
-  const [editMode, setEditMode] = useState<{ section: string, id: string } | null>(null);
+export const Admin: FunctionalComponent = ({ }) => {
+  const [editMode, setEditMode] = useState<{ section: string, id: number } | null>(null);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [cardStates, setCardStates] = useState(content.sections);
 
-  const handleEdit = (section: string, id: string) => {
+  const handleEdit = (section: string, id: number) => {
     setEditMode({ section, id });
   };
 
@@ -14,11 +16,27 @@ const Admin = () => {
   };
 
   const toggleSection = (sectionKey: string) => {
-    if (activeSection === sectionKey) {
-      setActiveSection(null);
-    } else {
-      setActiveSection(prevSection => (prevSection === sectionKey ? null : sectionKey));
-    }
+    setActiveSection(prevSection => (prevSection === sectionKey ? null : sectionKey));
+  };
+
+  const toggleArchive = (sectionKey: string, cardIndex: number) => {
+    setCardStates(prevStates => {
+      const newState = { ...prevStates };
+      const section = newState[sectionKey];
+      const card = section.cards[cardIndex];
+      card.archived = !card.archived;
+      return newState;
+    });
+  };
+
+  const toggleStaffOnly = (sectionKey: string, cardIndex: number) => {
+    setCardStates(prevStates => {
+      const newState = { ...prevStates };
+      const section = newState[sectionKey];
+      const card = section.cards[cardIndex];
+      card.staffOnly = !card.staffOnly;
+      return newState;
+    });
   };
 
   return (
@@ -26,8 +44,8 @@ const Admin = () => {
       <h1 className="text-3xl font-bold text-gray-900 mt-6">Admin Dashboard</h1>
       <section className="mt-8">
         <h2 className="text-xl font-bold text-indigo-600">Content Management</h2>
-        {Object.keys(content.sections).map((sectionKey) => {
-          const section = content.sections[sectionKey];
+        {Object.keys(cardStates).map((sectionKey) => {
+          const section = cardStates[sectionKey];
           const isActive = activeSection === sectionKey;
           return (
             <div key={sectionKey} className="mt-5">
@@ -44,17 +62,31 @@ const Admin = () => {
               </button>
               <div className={`transition-max-height duration-500 ease-in-out overflow-hidden ${isActive ? 'max-h-screen' : 'max-h-0'}`}>
                 <div className="border-b border-gray-200">
-                  {section.cards.map((card) => (
+                  {section.cards.map((card, index) => (
                     <div
-                      key={card.link}
-                      className="flex justify-between items-center mb-4 transition duration-300 ease-in-out transform"
+                      key={index}
+                      className={`flex justify-between items-center mb-4 transition duration-300 ease-in-out p-4 transform ${card.archived ? 'bg-stone-200' : ''} ${card.staffOnly ? 'border-l-4 border-blue-600' : ''}`}
                     >
-                      <div>
+                      <div className='m2'>
                         <h4 className="font-medium text-lg">{card.title}</h4>
-                        <p>{card.description}</p>
+                        <p className={'mt-'}>{card.description}</p>
+                        <div className="flex space-x-4 text-sm mt-1">
+                          <button
+                            onClick={() => toggleArchive(sectionKey, index)}
+                            className="text-blue-500 hover:underline"
+                          >
+                            {card.archived ? 'Unarchive' : 'Archive'}
+                          </button>
+                          <button
+                            onClick={() => toggleStaffOnly(sectionKey, index)}
+                            className="text-blue-500 hover:underline"
+                          >
+                            {card.staffOnly ? 'Make Public' : 'Make Staff Only'}
+                          </button>
+                        </div>
                       </div>
                       <button
-                        onClick={() => handleEdit(sectionKey, card.link)}
+                        onClick={() => handleEdit(sectionKey, index)}
                         className="text-indigo-500 hover:text-indigo-800 transition duration-300 ease-in-out"
                       >
                         Edit
@@ -83,5 +115,3 @@ const Admin = () => {
     </div>
   );
 };
-
-export default Admin;

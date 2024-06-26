@@ -1,7 +1,6 @@
 /** src/utils.ts **/
 
-import { Card } from "./components/FeatureCard";
-import { content } from "./content";
+import { Card, content } from "./content";
 
 export function generateSlug(title: string): string {
   return title.toLowerCase().replace(/ /g, "-");

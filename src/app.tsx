@@ -2,18 +2,16 @@
 
 import { Router, route } from "preact-router";
 import { useEffect, useReducer, useState } from "preact/hooks";
-import { content } from "./content";
 import { VNode } from "preact";
 import Article from "./components/Article";
 import { Categories } from "./components/Categories";
 import { CategoryItems } from "./components/CategoryItems";
-import { Card } from "./components/FeatureCard";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
-import { SectionData, MainContent } from "./components/MainContent";
 import { NotFound } from "./components/NotFound";
 import Home from "./components/Home";
-import Admin from "./components/Admin";
+import {Admin} from "./components/Admin";
+import { Card } from "./content";
 
 export interface AppState {
   searchQuery: string | null;

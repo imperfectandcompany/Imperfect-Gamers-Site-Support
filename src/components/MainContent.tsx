@@ -2,10 +2,10 @@
 
 import { FunctionalComponent } from "preact";
 import { SkeletonLoader } from "./SkeletonLoader";
-import { Card } from "./FeatureCard";
 import { Section } from "./Section";
 import { route } from "preact-router";
 import { generateSlug } from "../utils";
+import { Card } from "../content";
 
 export interface SectionData {
   title: string;
