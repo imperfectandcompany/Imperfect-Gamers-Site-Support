@@ -62,4 +62,3 @@ function findDifferences(oldText: string, newText: string) {
       default: return 'transparent';
     }
   }
-  

@@ -1,8 +1,7 @@
 // src/components/Home.tsx
 
-import { content } from "../content";
+import { Card, content } from "../content";
 import { MainContent, SectionData } from "./MainContent";
-import { Card } from "./FeatureCard";
 import Breadcrumb from "./Breadcrumb";
 
 interface HomeProps {
@@ -22,7 +21,7 @@ const Home = ({
   currentItemCount,
   path,
   onBreadcrumbClick,
-  onBreadcrumbClickHome
+  onBreadcrumbClickHome,
 }: HomeProps) => {
   const filteredSections = Object.keys(content.sections).reduce<{
     [key: string]: SectionData;
@@ -31,17 +30,17 @@ const Home = ({
     const filteredCards = section.cards
       .map((card) => {
         const matches = {
-          title: ((searchQuery || searchQuery === "") && searchQuery !== null) ? card.title.toLowerCase().includes(searchQuery.toLowerCase()) : false,
-          description: ((searchQuery || searchQuery === "") && searchQuery !== null) ? card.description.toLowerCase().includes(searchQuery.toLowerCase()) : false,
-          detailedDescription: ((searchQuery || searchQuery === "") && searchQuery !== null) ? card.detailedDescription.toLowerCase().includes(searchQuery.toLowerCase()) : false,
+          title: searchQuery ? card.versions.slice(-1)[0].title.toLowerCase().includes(searchQuery.toLowerCase()) : true,
+          description: searchQuery ? card.versions.slice(-1)[0].description.toLowerCase().includes(searchQuery.toLowerCase()) : true,
+          detailedDescription: searchQuery ? card.versions.slice(-1)[0].detailedDescription.toLowerCase().includes(searchQuery.toLowerCase()) : true,
         };
         return { ...card, matches };
       })
-      .filter((card) => Object.values(card.matches).some(Boolean))
-      .map((card) => ({ ...card, category: "" }));
+      .filter((card) => searchQuery ? Object.values(card.matches).some(Boolean) : true)
+      .map((card) => ({ ...card, category: section.versions.slice(-1)[0].title }));
 
     if (filteredCards.length > 0) {
-      acc[key] = { ...section, cards: filteredCards, category: "" };
+      acc[key] = { ...section, cards: filteredCards, title: section.versions.slice(-1)[0].title, category: "" };
     }
     return acc;
   }, {});
@@ -54,8 +53,10 @@ const Home = ({
   return (
     <div>
       {(path.startsWith("/search") || isSearching) && (
-        <Breadcrumb path={"/search"} onBreadcrumbClick={onBreadcrumbClick}
-        onBreadcrumbClickHome={onBreadcrumbClickHome}
+        <Breadcrumb
+          path={"/search"}
+          onBreadcrumbClick={onBreadcrumbClick}
+          onBreadcrumbClickHome={onBreadcrumbClickHome}
         />
       )}
       <MainContent

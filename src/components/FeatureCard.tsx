@@ -6,12 +6,25 @@ import { useEffect, useState, useRef } from "preact/hooks";
 import { route } from "preact-router";
 import { ContextMenu, useClickAway } from "./ContextMenu";
 import { isFeatureEnabled } from "../featureFlags"; // Import the feature flag utility
-import { Card } from "../content";
 
-interface FeatureCardProps extends Card {
+export interface FeatureCardProps {
+  id: number;
+  imgSrc: string;
+  title: string;
+  description: string;
+  detailedDescription: string;
   category: string;
+  slug: string;
+  matches: {
+    title: boolean;
+    description: boolean;
+    detailedDescription: boolean;
+  };
+  searchQuery?: string | null;
+  archived: boolean;
+  staffOnly: boolean;
   onClick: () => void;
-  searchQuery: string | null;
+  showImage?: boolean; // Add the showImage property as optional
 }
 
 export const FeatureCard: FunctionalComponent<FeatureCardProps> = ({

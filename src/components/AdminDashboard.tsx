@@ -61,8 +61,9 @@ export const AdminDashboard: FunctionalComponent = ({ }) => {
       <section className="mt-8">
         <h2 className="text-xl font-bold text-indigo-600">Content Management</h2>
         {Object.keys(cardStates).map((sectionKey) => {
-          const section = cardStates[sectionKey];
-          const isActive = activeSection === sectionKey;
+            const section = cardStates[sectionKey];
+            const latestSectionVersion = section.versions.slice(-1)[0];
+            const isActive = activeSection === sectionKey;
           return (
             <div key={sectionKey} className="mt-5">
                 
@@ -70,7 +71,7 @@ export const AdminDashboard: FunctionalComponent = ({ }) => {
                 onClick={() => toggleSection(sectionKey)}
                 className="flex justify-between items-center w-full text-left text-lg font-semibold text-indigo-500 py-2 transition duration-300 ease-in-out transform hover:scale-100 focus:outline-none"
               >
-                {section.title} ({section.cards.length} Articles)
+                  {latestSectionVersion.title} ({section.cards.length} Articles)
                 <span className={`transform transition-transform duration-300 ${isActive ? 'rotate-180' : 'rotate-0'}`}>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -79,14 +80,16 @@ export const AdminDashboard: FunctionalComponent = ({ }) => {
               </button>
               <div className={`transition-max-height duration-500 ease-in-out overflow-hidden ${isActive ? 'max-h-screen' : 'max-h-0'}`}>
                 <div className="border-b border-gray-200">
-                  {section.cards.map((card, index) => (
+                {section.cards.map((card, index) => {
+                      const latestCardVersion = card.versions.slice(-1)[0];
+                      return (
                     <div
                       key={index}
                       className={`flex justify-between items-center mb-4 transition duration-300 ease-in-out p-4 transform ${card.archived ? 'bg-stone-50' : ''} ${card.staffOnly ? 'border-l-4 border-indigo-600' : ''}`}
                     >
                       <div className='m2'>
-                        <h4 className="font-medium text-lg">{card.title}</h4>
-                        <p className={'mt-'}>{card.description}</p>
+                      <h4 className="font-medium text-lg">{latestCardVersion.title}</h4>
+                      <p className='mt-1'>{latestCardVersion.description}</p>
                         <div className="flex space-x-4 text-sm mt-1">
                           <button
                             onClick={() => toggleArchive(sectionKey, index)}
@@ -109,7 +112,8 @@ export const AdminDashboard: FunctionalComponent = ({ }) => {
                         Edit
                       </button>
                     </div>
-                  ))}
+                      );
+                    })}
                 </div>
               </div>
             </div>

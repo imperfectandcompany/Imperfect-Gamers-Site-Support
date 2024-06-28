@@ -29,23 +29,26 @@ export const Section: FunctionalComponent<SectionProps> = ({
         .replace(/ /g, "-")}
     >
       <h2 className="text-2xl font-semibold text-center mb-4">{data.title}</h2>
-      {data.cards.map((card) => (
+      {data.cards.map((card) => {
+        const latestVersion = card.versions[card.versions.length - 1];
+        return (
         <FeatureCard
-          key={card.title}
-          id={card.id} // Add the id property
-          title={card.title}
-          imgSrc={card.imgSrc} // Add the imgSrc value
-          description={card.description} // Add the description value
-          detailedDescription={card.detailedDescription} // Add the detailedDescription value
-          category={card.category}
+        key={latestVersion.title}
+        id={card.id} // Add the id property
+        title={latestVersion.title}
+        imgSrc={card.imgSrc} // Add the imgSrc value
+        description={latestVersion.description} // Add the description value
+        detailedDescription={latestVersion.detailedDescription} // Add the detailedDescription value
+        category={card.category}
           slug={card.slug}
           matches={card.matches} // Pass matches prop
           searchQuery={searchQuery} // Pass searchQuery prop
-          archived={false} // Add the archived property
-          staffOnly={false} // Add the staffOnly property
+          archived={card.archived} // Add the archived property
+          staffOnly={card.staffOnly} // Add the staffOnly property
           onClick={() => onCardClick(card)}
         />
-      ))}
+      );
+    })}
     </section>
   );
 };

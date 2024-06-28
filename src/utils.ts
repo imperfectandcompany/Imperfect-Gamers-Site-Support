@@ -6,10 +6,11 @@ export function generateSlug(title: string): string {
   return title.toLowerCase().replace(/ /g, "-");
 }
 
+// This function now fetches the latest version of the card based on the slug.
 export function findCardBySlug(slug: string): Card | null {
   for (const section of Object.values(content.sections)) {
     const card = section.cards.find(
-      (card) => generateSlug(card.title) === slug
+      (card) => generateSlug(card.versions[card.versions.length - 1].title) === slug
     );
     if (card) {
       return card;
@@ -17,8 +18,6 @@ export function findCardBySlug(slug: string): Card | null {
   }
   return null;
 }
-
-
 
 
 export function findCardById(id: number): Card | null {

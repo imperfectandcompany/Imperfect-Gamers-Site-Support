@@ -28,7 +28,7 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
 
   if (categorySlug) {
     category = Object.values(content.sections).find(
-      section => generateSlug(section.title) === categorySlug
+      section => generateSlug(section.versions.slice(-1)[0].title) === categorySlug
     );
   }
 
@@ -39,13 +39,10 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
         section.cards.includes(article as Card)
       );
       if (category) {
-        categorySlug = generateSlug(category.title);
+        categorySlug = generateSlug(category.versions.slice(-1)[0].title);
       }
     }
   }
-
-
-
 
   const breadcrumbItems = [];
 
@@ -78,7 +75,7 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
       breadcrumbItems.push(
         <li key="edit" className="inline">
           <span className="mx-2 text-gray-500">/</span>
-          <Link href={`/admin/edit/${articleId}`} className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>{card?.title}</Link>
+          <Link href={`/admin/edit/${articleId}`} className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>{card?.versions.slice(-1)[0].title}</Link>
         </li>
       );
     
@@ -86,7 +83,7 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
         breadcrumbItems.push(
           <li key={`article-${articleId}`} className="inline font-bold">
             <span className="mx-2 text-gray-500">/</span>
-            {article.title}
+            {article.versions.slice(-1)[0].title}
           </li>
         );
       }
@@ -107,7 +104,7 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
     breadcrumbItems.push(
       <li key={`category-${categorySlug}`} className="inline">
         <span className="mx-2 text-gray-500">/</span>
-        <Link href={`/category/${categorySlug}`} className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>{category.title}</Link>
+        <Link href={`/category/${categorySlug}`} className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>{category.versions.slice(-1)[0].title}</Link>
       </li>
     );
   }
@@ -116,7 +113,7 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
     breadcrumbItems.push(
       <li key={`article-${articleTitle}`} className="inline font-bold">
         <span className="mx-2 text-gray-500">/</span>
-        {article.title}
+        {article.versions.slice(-1)[0].title}
       </li>
     );
   }

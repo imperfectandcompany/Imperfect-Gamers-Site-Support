@@ -12,7 +12,8 @@ export const ArticleView: FunctionalComponent<DetailViewProps> = ({
   item,
   onBack,
 }) => {
-  const contentElements = parseContent(item.detailedDescription);
+  const latestVersion = item.versions.slice(-1)[0]; // Get the latest version of the article
+  const contentElements = parseContent(latestVersion.detailedDescription);
 
   return (
     <>
@@ -77,7 +78,7 @@ export const ArticleView: FunctionalComponent<DetailViewProps> = ({
             Back
           </button>
           <h1 className="mt-8 text-4xl font-normal tracking-tighter text-black/75 sm:text-5xl">
-            {item.title}
+          {latestVersion.title}
           </h1>
           <div className="detail-description mt-4">
             {renderContent(contentElements)}

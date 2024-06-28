@@ -7,12 +7,13 @@ import Breadcrumb from './Breadcrumb';
 
 export const Categories = ({ path, onBreadcrumbClick }: { path: string, onBreadcrumbClick: () => void }) => {
   const categories = Object.keys(content.sections).map(
-    (key: keyof typeof content.sections) => ({
-      title: content.sections[key].title,
-      slug: generateSlug(
-        content.sections[key as keyof typeof content.sections].title
-      ),
-    })
+    (key: keyof typeof content.sections) => {
+      const latestVersion = content.sections[key].versions.slice(-1)[0];
+      return {
+        title: latestVersion.title,
+        slug: generateSlug(latestVersion.title),
+      };
+    }
   );
 
   return (

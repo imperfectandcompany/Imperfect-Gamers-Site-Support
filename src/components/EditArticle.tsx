@@ -1,6 +1,6 @@
 import { FunctionalComponent } from "preact";
 import { useState, useEffect, useRef } from "preact/hooks";
-import { Card } from "../content";
+import { Card, content } from "../content";
 import { findCardById } from "../utils";
 import Breadcrumb from "./Breadcrumb";
 import { parseContent } from "../contentParser";
@@ -65,7 +65,7 @@ if (loadingError) {
   };
 
 
-  const [articleText, setArticleText] = useState(article.detailedDescription);
+  const [articleText, setArticleText] = useState(article.versions.slice(-1)[0].detailedDescription);
 
   const handleTextAreaInput = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const target = event.target as HTMLTextAreaElement;
@@ -120,41 +120,49 @@ if (loadingError) {
     content: string;
   }
 
-  const fetchArticleHistory = (articleId: number): ArticleHistory[] => {
-    // This would fetch history from local storage or a similar client-side storage
-    return JSON.parse(localStorage.getItem(`history_${articleId}`) || "[]");
-  };
-
   // const { user } = useMockAuth();
-  const [history, setHistory] = useState<ArticleHistory[]>([]);
+  const [history, setHistory] = useState(article.versions);
 
   const saveEdit = (newContent: string) => {
     const user = useMockAuth().getUser(); // Get the current user details
 
-    const newHistory: ArticleHistory = {
-      editor: user.username, // Use username instead of email
-      role: user.role, // Include the role in the history
-      timestamp: new Date().toISOString(),
-      content: newContent,
+    const newVersion = {
+      versionId: history.length + 1,
+      title: article.versions.slice(-1)[0].title,
+      description: article.versions.slice(-1)[0].description,
+      detailedDescription: newContent,
+      editedBy: user.userId,
+      editDate: new Date().toISOString(),
     };
 
-    // Update local history
-    const updatedHistory = [...history, newHistory];
+    const updatedHistory = [...history, newVersion];
     setHistory(updatedHistory);
-    localStorage.setItem(
-      `history_${articleId}`,
-      JSON.stringify(updatedHistory)
-    );
 
     // Save the article edit
     if (article) {
-      setArticle({ ...article, detailedDescription: newContent });
+      const newArticle = {
+        ...article,
+        versions: updatedHistory,
+      };
+      setArticle(newArticle);
+      // Update the content object here as well
+      const sectionKey = Object.keys(content.sections).find(key =>
+        content.sections[key].cards.some(c => c.id === article.id)
+      );
+      if (sectionKey) {
+        const section = content.sections[sectionKey];
+        const cardIndex = section.cards.findIndex(c => c.id === article.id);
+        if (cardIndex > -1) {
+          section.cards[cardIndex] = newArticle;
+        }
+      }
     }
   };
 
   // This will determine if the articleText is different from the original article content
   const isContentChanged =
-    article && articleText !== article?.detailedDescription;
+    article && articleText !== article?.versions.slice(-1)[0].detailedDescription;
+
 
   // Content display based on the current view
   const displayContent = () => {
@@ -213,7 +221,7 @@ if (loadingError) {
                   <button
                     id="resetArticle"
                     type="button"
-                    onClick={() => setArticleText(article?.detailedDescription)}
+                    onClick={() => setArticleText(article?.versions.slice(-1)[0].detailedDescription)}
                     disabled={!isContentChanged}
                     className="p-1 px-4 font-semibold text-white bg-stone-500 hover:bg-stone-600 focus:ring-2 focus:ring-stone-400 transition rounded-md select-none disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none"
                     title={
@@ -260,7 +268,7 @@ if (loadingError) {
         case "history":
             return history.length > 1 ? (
               <TextDiffViewer
-                oldText={article.detailedDescription}
+                oldText={article.versions.slice(-2)[0].detailedDescription}
                 newText={articleText}
               />
             ) : (
@@ -276,20 +284,20 @@ if (loadingError) {
       <Breadcrumb path={`/admin/edit/${articleId}`} articleId={article.id} />
       <div className="container relative px-8 py-16 mx-auto max-w-7xl md:px-12 lg:px-18 lg:py-22">
         <h1 className="text-3xl font-normal tracking-tighter text-black sm:text-4xl lg:text-5xl">
-          Editing: {article.title}
+        Editing: {article.versions.slice(-1)[0].title}
         </h1>
         <button
-  onClick={() =>
-    currentView === "raw" || currentView === "rendered"
-      ? toggleHistory()
-      : toggleRaw()
-  }
-  disabled={(history.length <= 1) && (currentView === "raw" || currentView === "rendered")}
->
-  {currentView === "raw" || currentView === "rendered"
-    ? "View History"
-    : "Back to Edit"}
-</button>
+          onClick={() =>
+            currentView === "raw" || currentView === "rendered"
+              ? toggleHistory()
+              : toggleRaw()
+          }
+          disabled={(history.length <= 1) && (currentView === "raw" || currentView === "rendered")}
+        >
+          {currentView === "raw" || currentView === "rendered"
+            ? "View History"
+            : "Back to Edit"}
+        </button>
         {displayContent()}
       </div>
     </>

@@ -16,7 +16,7 @@ export const CategoryItems: FunctionalComponent<
   CategoryItemsProps & { onCardClick: (item?: Card) => void }
 > = ({ categorySlug, onCardClick }) => {
   const categoryKey = Object.keys(content.sections).find(
-    (key) => generateSlug(content.sections[key].title) === categorySlug
+    (key) => generateSlug(content.sections[key].versions.slice(-1)[0].title) === categorySlug
   );
 
   if (!categoryKey) {
@@ -35,21 +35,20 @@ const filteredCards = category.cards.filter(card => !card.archived && (!card.sta
       <Breadcrumb path={`/category/${categorySlug}`} categorySlug={categorySlug} />
       <div className="container relative px-8 py-16 mx-auto max-w-7xl md:px-12 lg:px-18 lg:py-22">
         <h1 className="text-3xl font-normal tracking-tighter text-black sm:text-4xl lg:text-5xl">
-          {category.title}
+        {category.versions.slice(-1)[0].title}
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
           {filteredCards.map((card) => (
             <FeatureCard
-              key={card.title}
-              title={card.title}
+            key={card.id} // Use card ID as key
+            title={card.versions.slice(-1)[0].title}
               id={card.id} // Add the id property
               imgSrc={card.imgSrc}
-              description={card.description}
-              detailedDescription={card.detailedDescription}
-              category={category.title}
+              description={card.versions.slice(-1)[0].description}
+              detailedDescription={card.versions.slice(-1)[0].detailedDescription}
+              category={category.versions.slice(-1)[0].title}
               slug={card.slug}
               matches={card.matches}
-              searchQuery={""} // No search query in this context
               onClick={() => onCardClick(card)} // Use onCardClick with the card
               archived={card.archived} // Add the archived property
               staffOnly={card.staffOnly} // Add the staffOnly property
