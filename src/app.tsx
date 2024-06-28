@@ -10,8 +10,11 @@ import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { NotFound } from "./components/NotFound";
 import Home from "./components/Home";
-import {Admin} from "./components/Admin";
+import { Admin } from "./components/Admin";
 import { Card } from "./content";
+import { ErrorBoundary } from "./components/ErrorBoundary"; // Add this line to import ErrorBoundary
+import { EditArticle } from "./components/EditArticle";
+import { AdminDashboard } from "./components/AdminDashboard";
 
 export interface AppState {
   searchQuery: string | null;
@@ -262,6 +265,7 @@ export function App(): VNode {
         onCategoryClick={() => dispatch({ type: "CLEAR_SEARCH" })}
       />
       <main className="flex-1 relative">
+      <ErrorBoundary>
         <Router>
           <Home
             path="/"
@@ -281,7 +285,7 @@ export function App(): VNode {
             onBreadcrumbClickHome={() => dispatch({ type: "CLEAR_SEARCH" })}
           />
           <Article
-            path="/article/:id"
+            path="/article/:title"
             lastRoute={state.lastRoute || "/"}
             onBreadcrumbClick={() => dispatch({ type: "CLEAR_SEARCH" })}
           />
@@ -294,9 +298,12 @@ export function App(): VNode {
             categorySlug=""
             onCardClick={handleCardClick} // Pass handleCardClick to CategoryItems
           />
-          <Admin path="/admin" />
+            <AdminDashboard path="/admin/dashboard" />
+            <Admin path="/admin"/>
+            <EditArticle path="/admin/edit/:articleId" />
           <NotFound default />
         </Router>
+        </ErrorBoundary>
       </main>
       <Footer />
     </div>

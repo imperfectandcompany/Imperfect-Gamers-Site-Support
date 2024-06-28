@@ -32,6 +32,7 @@ export const Section: FunctionalComponent<SectionProps> = ({
       {data.cards.map((card) => (
         <FeatureCard
           key={card.title}
+          id={card.id} // Add the id property
           title={card.title}
           imgSrc={card.imgSrc} // Add the imgSrc value
           description={card.description} // Add the description value

@@ -31,6 +31,11 @@ export const Header: FunctionalComponent<HeaderProps> = ({
       window.removeEventListener("popstate", handleLocationChange);
     };
   }, []);
+
+function onAdminClick(){
+console.log('');
+}
+
   return (
     <header className="flex flex-wrap  md:items-center justify-between px-4 py-3 ite shadow-sm sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <div className="flex items-center cursor-pointer z-30">
@@ -43,9 +48,16 @@ export const Header: FunctionalComponent<HeaderProps> = ({
         </Link>
       </div>
       <div className="flex items-center space-x-4 mt-3 sm:mt-0">
+      <Link
+          href="/admin"
+          className={`flex items-center hidden md:block px-4 py-3 text-indigo-400 hover:text-indigo-550 transition ${currentPath === '/categories' ? 'hidden' : ''}`}
+          onClick={onAdminClick}
+        >
+          Admin
+        </Link>
         <Link
           href="/categories"
-          className={`flex items-center hidden md:block px-4 py-3 text-indigo-300 ${currentPath === '/categories' ? 'hidden' : ''}`}
+          className={`flex items-center hidden md:block px-4 py-3 text-indigo-400 hover:text-indigo-550 transition ${currentPath === '/categories' ? 'hidden' : ''}`}
           onClick={onCategoryClick}
         >
           Categories

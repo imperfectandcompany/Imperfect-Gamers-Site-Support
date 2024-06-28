@@ -2,14 +2,15 @@
 
 import { FunctionalComponent } from 'preact';
 import { Link } from 'preact-router';
-import { content } from '../content';
-import { findCardBySlug, generateSlug } from '../utils';
-import { Card } from './FeatureCard';
+import { Card, content } from '../content';
+import { findCardById, findCardBySlug, generateSlug } from '../utils';
+
 
 interface BreadcrumbProps {
   path: string;
   categorySlug?: string;
-  articleId?: string;
+  articleId?: number;
+  articleTitle?: string;
   onBreadcrumbClick?: () => void;
   onBreadcrumbClickHome?: () => void;
 }
@@ -18,6 +19,7 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
   path,
   categorySlug,
   articleId,
+  articleTitle,
   onBreadcrumbClick,
   onBreadcrumbClickHome
 }) => {
@@ -30,8 +32,8 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
     );
   }
 
-  if (articleId) {
-    article = findCardBySlug(articleId);
+  if (articleTitle) {
+    article = findCardBySlug(articleTitle);
     if (article && !category) {
       category = Object.values(content.sections).find(section =>
         section.cards.includes(article as Card)
@@ -42,6 +44,9 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
     }
   }
 
+
+
+
   const breadcrumbItems = [];
 
   breadcrumbItems.push(
@@ -49,6 +54,7 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
       <Link href="/" className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClickHome}>Home</Link>
     </li>
   );
+  
 
   if (path.startsWith("/search")) {
     breadcrumbItems.push(
@@ -58,6 +64,35 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
       </li>
     );
   }
+
+  if (path.includes("/admin")) {
+    breadcrumbItems.push(
+      <li key="admin" className="inline">
+        <span className="mx-2 text-gray-500">/</span>
+        <Link href="/admin" className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>Admin</Link>
+      </li>
+    );
+    
+    if (path.includes("/edit")) {
+      const card = articleId ? findCardById(articleId) : null;
+      breadcrumbItems.push(
+        <li key="edit" className="inline">
+          <span className="mx-2 text-gray-500">/</span>
+          <Link href={`/admin/edit/${articleId}`} className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>{card?.title}</Link>
+        </li>
+      );
+    
+      if (article && card) {
+        breadcrumbItems.push(
+          <li key={`article-${articleId}`} className="inline font-bold">
+            <span className="mx-2 text-gray-500">/</span>
+            {article.title}
+          </li>
+        );
+      }
+    }
+  }
+
 
   if (path === "/categories" || category) {
     breadcrumbItems.push(
@@ -79,7 +114,7 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
 
   if (article) {
     breadcrumbItems.push(
-      <li key={`article-${articleId}`} className="inline font-bold">
+      <li key={`article-${articleTitle}`} className="inline font-bold">
         <span className="mx-2 text-gray-500">/</span>
         {article.title}
       </li>

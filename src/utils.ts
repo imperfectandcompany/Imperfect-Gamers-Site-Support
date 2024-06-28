@@ -18,6 +18,20 @@ export function findCardBySlug(slug: string): Card | null {
   return null;
 }
 
+
+
+
+export function findCardById(id: number): Card | null {
+  for (const section of Object.values(content.sections)) {
+    const card = section.cards.find(
+      (card) => card.id === id
+    );
+    if (card) {
+      return card;
+    }
+  }
+  return null;
+}
 export function highlightText(text: string, query: string): string {
   const parts = text.split(new RegExp(`(${query})`, "gi"));
   return parts

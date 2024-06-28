@@ -5,6 +5,8 @@ import { Card, content } from '../content';
 import { generateSlug } from '../utils';
 import { FeatureCard } from './FeatureCard';
 import Breadcrumb from './Breadcrumb';
+import { AccessRestricted } from './AccessRestricted';
+import { useMockAuth } from './models/userModel';
 
 interface CategoryItemsProps {
   categorySlug: string;
@@ -18,10 +20,15 @@ export const CategoryItems: FunctionalComponent<
   );
 
   if (!categoryKey) {
-    return <p>Category not found</p>;
+    return <AccessRestricted message="Category not found" />;
   }
 
   const category = content.sections[categoryKey];
+  const { isStaff } = useMockAuth(); // Use the custom hook
+
+  const userIsStaff = isStaff(); // Call the method to check if user is staff
+
+const filteredCards = category.cards.filter(card => !card.archived && (!card.staffOnly || userIsStaff));
 
   return (
     <div>
@@ -31,10 +38,11 @@ export const CategoryItems: FunctionalComponent<
           {category.title}
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
-          {category.cards.map((card) => (
+          {filteredCards.map((card) => (
             <FeatureCard
               key={card.title}
               title={card.title}
+              id={card.id} // Add the id property
               imgSrc={card.imgSrc}
               description={card.description}
               detailedDescription={card.detailedDescription}

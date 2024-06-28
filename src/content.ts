@@ -1,5 +1,7 @@
 // src/content.ts
 
+import { useState, useEffect } from "preact/hooks";
+
 interface Section {
   title: string;
   cards: Card[];
@@ -32,6 +34,7 @@ interface Content {
 }
 
 export interface Card {
+  id: number;
   imgSrc: string;
   title: string;
   description: string;
@@ -88,6 +91,7 @@ export const content: Content = {
       title: "Server Rules",
       cards: [
         {
+          id: 1,
           imgSrc: "https://placehold.co/100x100.png?text=general-rules",
           title: "General Rules",
           description: "Because chaos is only fun in moderation.",
@@ -104,6 +108,7 @@ export const content: Content = {
           },
         },
         {
+          id: 2,
           imgSrc: "https://placehold.co/100x100.png?text=extended-mute-or-ban",
           title: "Extended Mute or Ban",
           description: "For those who really like to push the boundaries.",
@@ -120,6 +125,7 @@ export const content: Content = {
           },
         },
         {
+          id: 3,
           imgSrc:
             "https://placehold.co/100x100.png?text=minimum-30-minute-mute",
           title: "Minimum 30 Minute Mute",
@@ -137,6 +143,7 @@ export const content: Content = {
           },
         },
         {
+          id: 4,
           imgSrc:
             "https://placehold.co/100x100.png?text=rapping-and-djing-rules",
           title: "Rapping and DJing Rules",
@@ -159,6 +166,7 @@ export const content: Content = {
       title: "VIP Infractions",
       cards: [
         {
+          id: 5,
           imgSrc: "https://placehold.co/100x100.png?text=vip-infractions",
           title: "VIP Infractions",
           description:
@@ -181,6 +189,7 @@ export const content: Content = {
       title: "Staff Guidelines",
       cards: [
         {
+          id: 6,
           imgSrc: "https://placehold.co/100x100.png?text=staff-guide-redux",
           title: "Imperfect Gamers Staff Guide Redux (2017)",
           description:
@@ -198,6 +207,7 @@ export const content: Content = {
           },
         },
         {
+          id: 7,
           imgSrc: "https://placehold.co/100x100.png?text=ban-appeals",
           title: "Ban Appeals",
           description:
@@ -220,6 +230,7 @@ export const content: Content = {
       title: "Posting Guidelines",
       cards: [
         {
+          id: 8,
           imgSrc: "https://placehold.co/100x100.png?text=posting-guidelines",
           title: "Posting Guidelines",
           description:
@@ -242,6 +253,7 @@ export const content: Content = {
       title: "Admin Panel Guide",
       cards: [
         {
+          id: 9,
           imgSrc: "https://placehold.co/100x100.png?text=admin-panel-guide",
           title: "Admin Panel Guide",
           description:
@@ -264,6 +276,7 @@ export const content: Content = {
       title: "Forum and Subscriptions",
       cards: [
         {
+          id: 10,
           imgSrc: "https://placehold.co/100x100.png?text=creating-a-new-thread",
           title: "Creating a New Thread",
           description:
@@ -286,6 +299,7 @@ export const content: Content = {
       title: "Cheating Policy",
       cards: [
         {
+          id: 11,
           imgSrc: "https://placehold.co/100x100.png?text=cheating-policy",
           title: "Cheating Policy",
           description:
@@ -308,6 +322,7 @@ export const content: Content = {
       title: "Advanced Rules Menu",
       cards: [
         {
+          id: 12,
           imgSrc:
             "https://placehold.co/100x100.png?text=advanced-rules-menu-example",
           title: "Advanced Rules Menu Example",
@@ -330,6 +345,7 @@ export const content: Content = {
       title: "Infractions and Stats",
       cards: [
         {
+          id: 13,
           imgSrc: "https://placehold.co/100x100.png?text=infractions-and-stats",
           title: "Infractions and Stats",
           description:
@@ -352,6 +368,7 @@ export const content: Content = {
       title: "Server Commands",
       cards: [
         {
+          id: 14,
           imgSrc: "https://placehold.co/100x100.png?text=general-commands",
           title: "General Commands",
           description:
