@@ -13,7 +13,7 @@ const mockUser: User = {
   email: "admin@example.com",
   username: "JohnDoe",
   role: "headadmin", // Example role
-  isAuthenticated: true,
+  isAuthenticated: false,
 };
 
 export interface UserModel {
