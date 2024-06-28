@@ -13,8 +13,10 @@ import Home from "./components/Home";
 import { Admin } from "./components/Admin";
 import { Card } from "./content";
 import { ErrorBoundary } from "./components/ErrorBoundary"; // Add this line to import ErrorBoundary
-import { EditArticle } from "./components/EditArticle";
+
 import { AdminDashboard } from "./components/AdminDashboard";
+import { AdminLogs } from "./components/AdminLogs";
+import { AdminEditArticle } from "./components/AdminEditArticle";
 
 export interface AppState {
   searchQuery: string | null;
@@ -299,8 +301,9 @@ export function App(): VNode {
             onCardClick={handleCardClick} // Pass handleCardClick to CategoryItems
           />
             <AdminDashboard path="/admin/dashboard" />
+            <AdminLogs path="/admin/logs" />
             <Admin path="/admin"/>
-            <EditArticle path="/admin/edit/:articleId" />
+            <AdminEditArticle path="/admin/edit/:articleId" />
           <NotFound default />
         </Router>
         </ErrorBoundary>

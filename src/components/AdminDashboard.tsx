@@ -19,7 +19,7 @@ export const AdminDashboard: FunctionalComponent = ({ }) => {
 
 
   const handleEdit = (id: number) => {
-    // Correctly pass the article ID to the EditArticle component
+    // Correctly pass the article ID to the AdminEditArticle component
     route(`/admin/edit/${id}`);
 };
 
@@ -58,6 +58,16 @@ export const AdminDashboard: FunctionalComponent = ({ }) => {
         <h1 className="text-3xl font-normal tracking-tighter text-black sm:text-4xl lg:text-5xl">
           Admin Dashboard
         </h1>
+
+        <div className="mt-8">
+  <button
+    onClick={() => route('/admin/logs')}
+    className="px-4 py-2 bg-indigo-500 text-white font-bold rounded hover:bg-indigo-600 transition duration-300 ease-in-out"
+  >
+    Visit Admin Logs
+  </button>
+  </div>
+
       <section className="mt-8">
         <h2 className="text-xl font-bold text-indigo-600">Content Management</h2>
         {Object.keys(cardStates).map((sectionKey) => {

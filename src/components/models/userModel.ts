@@ -9,27 +9,42 @@ interface User {
   }
   
   // Mock user data with userId
-  const mockUser: User = {
-    userId: 1, // Example user ID
-    email: "admin@example.com",
-    username: "JohnDoe",
-    role: "headadmin",
-    isAuthenticated: false,
-  };
+  const mockUsers: User[] = [
+    {
+      userId: 1,
+      email: "admin@example.com",
+      username: "JohnDoe",
+      role: "headadmin",
+      isAuthenticated: false,
+    },
+    {
+      userId: 2,
+      email: "editor@example.com",
+      username: "JaneDoe",
+      role: "admin",
+      isAuthenticated: false,
+    },
+    // Add more mock users as needed
+  ];
+  
+  let currentUser: User | null = null;
   
   export interface UserModel {
     login: (email: string, password: string) => boolean;
     isAuthenticated: () => boolean;
     logout: () => void;
     isStaff: () => boolean;
-    getUser: () => User; // Method to get user details
+    getUser: () => User | null;
+    getUsernameById: (userId: number) => string;
   }
   
   export const useMockAuth = (): UserModel => {
     // Function to simulate login
     const login = (email: string, password: string): boolean => {
-      if (email === mockUser.email && password === "password") {
-        mockUser.isAuthenticated = true;
+      const user = mockUsers.find(u => u.email === email);
+      if (user && password === "password") {
+        user.isAuthenticated = true;
+        currentUser = user;
         return true;
       }
       return false;
@@ -37,24 +52,33 @@ interface User {
   
     // Function to check if the user is authenticated
     const isAuthenticated = () => {
-      return mockUser.isAuthenticated;
+      return currentUser?.isAuthenticated ?? false;
     };
   
     // Function to check if the user is a staff member
     const isStaff = () => {
-      return ["headadmin", "admin", "moderator"].includes(mockUser.role);
+      return ["headadmin", "admin", "moderator"].includes(currentUser?.role ?? "");
     };
   
     // Function to simulate logout
     const logout = () => {
-      mockUser.isAuthenticated = false;
+      if (currentUser) {
+        currentUser.isAuthenticated = false;
+        currentUser = null;
+      }
     };
   
     // Function to get the current user
     const getUser = () => {
-      return mockUser;
+      return currentUser;
     };
   
-    return { login, isAuthenticated, logout, isStaff, getUser };
+    // Function to get a username by userId
+    const getUsernameById = (userId: number): string => {
+      const user = mockUsers.find(u => u.userId === userId);
+      return user ? user.username : "Unknown";
+    };
+  
+    return { login, isAuthenticated, logout, isStaff, getUser, getUsernameById };
   };
   

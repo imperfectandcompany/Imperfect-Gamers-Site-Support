@@ -1,3 +1,5 @@
+
+
 import { FunctionalComponent } from "preact";
 import { useState, useEffect, useRef } from "preact/hooks";
 import { Card, content } from "../content";
@@ -6,16 +8,16 @@ import Breadcrumb from "./Breadcrumb";
 import { parseContent } from "../contentParser";
 import { renderContent } from "../contentRenderer";
 import { ChangeEvent } from "preact/compat";
-import { ContentElement } from "../contentTypes";
 import { AdminError } from "./AdminError";
 import { useMockAuth } from "./models/userModel";
 import { TextDiffViewer } from "./TextDiffViewer";
+import { AdminArticleHistoryView } from "./AdminArticleHistoryView";
 
 interface MatchParams {
   articleId: number;
 }
 
-export const EditArticle: FunctionalComponent<{ matches: MatchParams }> = ({
+export const AdminEditArticle: FunctionalComponent<{ matches: MatchParams }> = ({
   matches,
 }) => {
   const { articleId } = matches;
@@ -125,6 +127,7 @@ if (loadingError) {
 
   const saveEdit = (newContent: string) => {
     const user = useMockAuth().getUser(); // Get the current user details
+    if (!user) return null; // Add null check for user
 
     const newVersion = {
       versionId: history.length + 1,
@@ -299,6 +302,7 @@ if (loadingError) {
             : "Back to Edit"}
         </button>
         {displayContent()}
+        <AdminArticleHistoryView card={article}/>
       </div>
     </>
   );

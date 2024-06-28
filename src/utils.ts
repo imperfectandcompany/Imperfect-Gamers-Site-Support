@@ -1,6 +1,6 @@
 /** src/utils.ts **/
 
-import { Card, content } from "./content";
+import { Card, CardVersion, content } from "./content";
 
 export function generateSlug(title: string): string {
   return title.toLowerCase().replace(/ /g, "-");
@@ -19,6 +19,41 @@ export function findCardBySlug(slug: string): Card | null {
   return null;
 }
 
+
+export function editCard(cardId: number, updatedFields: Partial<Card & { description?: string, title?: string, detailedDescription?: string }>): void {
+  const card = findCardById(cardId);
+  if (!card) return;
+
+  const latestVersion = card.versions[card.versions.length - 1];
+  const newVersion: CardVersion = {
+    ...latestVersion,
+    versionId: latestVersion.versionId + 1,
+    editDate: new Date().toISOString(),
+    changes: [],
+  };
+
+  if (updatedFields.title && updatedFields.title !== latestVersion.title) {
+    newVersion.changes?.push(`Title changed from "${latestVersion.title}" to "${updatedFields.title}"`);
+    newVersion.title = updatedFields.title;
+  }
+
+  if (updatedFields.description && updatedFields.description !== latestVersion.description) {
+    newVersion.changes?.push(`Description changed`);
+    newVersion.description = updatedFields.description;
+  }
+
+  if (updatedFields.detailedDescription && updatedFields.detailedDescription !== latestVersion.detailedDescription) {
+    newVersion.changes?.push(`Detailed description changed`);
+    newVersion.detailedDescription = updatedFields.detailedDescription;
+  }
+
+  if (updatedFields.category && updatedFields.category !== card.category) {
+    newVersion.changes?.push(`Moved from category "${card.category}" to "${updatedFields.category}"`);
+    card.category = updatedFields.category;
+  }
+
+  card.versions.push(newVersion);
+}
 
 export function findCardById(id: number): Card | null {
   for (const section of Object.values(content.sections)) {

@@ -26,7 +26,7 @@ interface Content {
   };
 }
 
-interface CardVersion {
+export interface CardVersion {
   versionId: number; // Unique identifier for this version
   title: string; // Title of the card for this version
   description: string; // Description for this version
@@ -34,6 +34,7 @@ interface CardVersion {
   diffs?: string; // Optional serialized diff data between this and the previous version
   editedBy: number; // Identifier of the user who made the edit
   editDate: string; // Timestamp of when the edit was made
+  changes?: string[]; // Array of change descriptions
 }
 
 export interface Card {
