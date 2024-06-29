@@ -15,15 +15,14 @@ interface CategoryItemsProps {
 export const CategoryItems: FunctionalComponent<
   CategoryItemsProps & { onCardClick: (item?: Card) => void }
 > = ({ categorySlug, onCardClick }) => {
-  const categoryKey = Object.keys(content.sections).find(
-    (key) => generateSlug(content.sections[key].versions.slice(-1)[0].title) === categorySlug
+  const category = Object.values(content.sections).find(
+    section => generateSlug(section.versions.slice(-1)[0].title) === categorySlug
   );
 
-  if (!categoryKey) {
+  if (!category) {
     return <AccessRestricted message="Category not found" />;
   }
 
-  const category = content.sections[categoryKey];
   const { isStaff } = useMockAuth(); // Use the custom hook
 
   const userIsStaff = isStaff(); // Call the method to check if user is staff
@@ -46,7 +45,6 @@ const filteredCards = category.cards.filter(card => !card.archived && (!card.sta
               imgSrc={card.imgSrc}
               description={card.versions.slice(-1)[0].description}
               detailedDescription={card.versions.slice(-1)[0].detailedDescription}
-              category={category.versions.slice(-1)[0].title}
               slug={card.slug}
               matches={card.matches}
               onClick={() => onCardClick(card)} // Use onCardClick with the card

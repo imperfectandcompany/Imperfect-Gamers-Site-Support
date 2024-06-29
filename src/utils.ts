@@ -1,6 +1,6 @@
 /** src/utils.ts **/
 
-import { Card, CardVersion, content } from "./content";
+import { Card, CardVersion, Section, content } from "./content";
 
 export function generateSlug(title: string): string {
   return title.toLowerCase().replace(/ /g, "-");
@@ -57,16 +57,16 @@ export function editCard(cardId: number, updatedFields: Partial<Card & { descrip
 
 
 
-// Function to check if a category already exists
+// Checks if a category already exists based on title
 export const checkCategoryExists = async (title: string): Promise<boolean> => {
   const normalizedTitle = title.trim().toLowerCase();
-  return Object.keys(content.sections).some(key => {
-    const latestVersionTitle = content.sections[key].versions.slice(-1)[0].title.toLowerCase();
+  return Object.values(content.sections).some(section => {
+    const latestVersionTitle = section.versions[section.versions.length - 1].title.toLowerCase();
     return latestVersionTitle === normalizedTitle;
   });
 };
 
-// Function to add a new category
+// Adds a new category if it does not already exist
 export const addNewCategory = async ({ title }: { title: string }): Promise<{ success: boolean }> => {
   try {
     if (await checkCategoryExists(title)) {
@@ -74,14 +74,14 @@ export const addNewCategory = async ({ title }: { title: string }): Promise<{ su
       return { success: false };
     }
 
+    const newId = Object.keys(content.sections).length + 1; // Generate the next ID based on the current content length
     const newVersionId = 1; // As this is a new category, it starts with versionId 1
-    content.sections[title] = {
+    content.sections[newId] = { // Use newId to directly set the section
       versions: [{
         versionId: newVersionId,
         title: title,
         diffs: '',
-        // TODO PASS LOGGED IN USER ID
-        editedBy: 1, // Assuming a logged-in user ID, replace with dynamic data if available
+        editedBy: 1, // Assuming a logged-in user ID
         editDate: new Date().toISOString()
       }],
       cards: [] // No cards initially
@@ -94,6 +94,38 @@ export const addNewCategory = async ({ title }: { title: string }): Promise<{ su
   }
 };
 
+// Assuming each section can be uniquely identified by a key
+export const findCategoryById = (id: number): Section | null => {
+  // Directly return the section if it exists, or null if it does not
+  return content.sections[id] || null;
+};
+
+
+// Updates a category given its ID and new data
+export const updateCategory = async (id: number, data: { title: string }): Promise<{ success: boolean }> => {
+  try {
+    const category = findCategoryById(id);
+    if (category) {
+      const latestVersion = category.versions[category.versions.length - 1];
+      const newVersion = {
+        ...latestVersion,
+        versionId: latestVersion.versionId + 1,
+        title: data.title,
+        editDate: new Date().toISOString(),
+        editedBy: 1, // Assuming a user ID here
+        diffs: '' // Assuming diffs handling logic is elsewhere
+      };
+      category.versions.push(newVersion);
+      return { success: true };
+    }
+    return { success: false };
+  } catch (error) {
+    console.error("Update failed:", error);
+    return { success: false };
+  }
+};
+
+
 // Function to find the next available ID
 const getNextId = () => {
   const allCards = Object.values(content.sections).flatMap(section => section.cards);
@@ -101,43 +133,47 @@ const getNextId = () => {
   return highestId + 1;
 };
 
-export const addNewArticle = async ({ title, description, detailedDescription, category, imgSrc }: { title: string, description: string, detailedDescription: string, category: string, imgSrc: string }): Promise<{ success: boolean }> => {
+
+// WARNING - ADDS CATEGORY TO SECTION THAT DOES NOT EXIST -> THIS IS FOR FUTURE SUPPORT FOR CREATING NEW SECTION WHEN ADDING ARTICLE (NOT PRIORITY NOW)
+export const addNewArticle = async ({ title, description, detailedDescription, category, imgSrc }: { title: string, description: string, detailedDescription: string, category: number, imgSrc: string }): Promise<{ success: boolean }> => {
   try {
-      const newId = getNextId(); // Generate the next ID based on current content
-      const newArticle: Card = {
-          id: newId,
-          imgSrc: imgSrc,
-          versions: [{
-              versionId: 1,
-              title,
-              description,
-              detailedDescription,
-        // TODO PASS LOGGED IN USER ID
-              editedBy: 1, // Assuming a logged-in user ID
-              editDate: new Date().toISOString(),
-              changes: ['Initial creation']
-          }],
-          archived: false,
-          staffOnly: false,
-          category: category, // Set category
-          slug: title.toLowerCase().replace(/ /g, '-'),
-          matches: {
-              title: false,
-              description: false,
-              detailedDescription: false
-          }
-      };
+    const newId = getNextId(); // Generate the next ID based on current content
+    const newArticle: Card = {
+        id: newId,
+        imgSrc: imgSrc,
+        versions: [{
+            versionId: 1,
+            title,
+            description,
+            detailedDescription,
+            editedBy: 1, // Assuming a logged-in user ID
+            editDate: new Date().toISOString(),
+            changes: ['Initial creation']
+        }],
+        archived: false,
+        staffOnly: false,
+        category: category, // Set category, now a number
+        slug: title.toLowerCase().replace(/ /g, '-'),
+        matches: {
+            title: false,
+            description: false,
+            detailedDescription: false
+        }
+    };
 
-      // Ensure the category exists in the sections or create it
-      content.sections[category] = content.sections[category] || { versions: [], cards: [] };
-      content.sections[category].cards.push(newArticle);
+    // Ensure the category exists in the sections or create it
+    if (!content.sections[category]) {
+        content.sections[category] = { versions: [], cards: [] }; // Initialize if not present
+    }
+    content.sections[category].cards.push(newArticle);
 
-      return { success: true };
+    return { success: true };
   } catch (error) {
-      console.error('Failed to create new article:', error);
-      return { success: false };
+    console.error('Failed to create new article:', error);
+    return { success: false };
   }
 };
+
 
 // Function to check if an article with the same title already exists
 export const checkArticleExists = async (title: string): Promise<boolean> => {
@@ -155,15 +191,16 @@ export const checkArticleExists = async (title: string): Promise<boolean> => {
 };
 
 // Function to get all categories with their latest titles
-export const getAllCategories = async (): Promise<{ key: string, title: string }[]> => {
-  return Object.keys(content.sections).map(key => {
-      const latestVersion = content.sections[key].versions.slice(-1)[0];
-      return {
-          key,
-          title: latestVersion.title // Assuming the latest version of each section contains the current title
-      };
+export const getAllCategories = async (): Promise<{ id: number, title: string }[]> => {
+  return Object.entries(content.sections).map(([id, section]) => {
+    const latestVersion = section.versions.slice(-1)[0]; // Get the latest version
+    return {
+        id: parseInt(id), // Convert key to a number
+        title: latestVersion.title
+    };
   });
 };
+
 
 
 export function findCardById(id: number): Card | null {

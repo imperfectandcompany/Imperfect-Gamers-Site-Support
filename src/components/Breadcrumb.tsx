@@ -9,6 +9,7 @@ import { findCardById, findCardBySlug, generateSlug } from '../utils';
 interface BreadcrumbProps {
   path: string;
   categorySlug?: string;
+  categoryId?: number; // Add this to accept category ID
   articleId?: number;
   articleTitle?: string;
   onBreadcrumbClick?: () => void;
@@ -18,6 +19,7 @@ interface BreadcrumbProps {
 const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
   path,
   categorySlug,
+  categoryId, // Add this to destructure the prop
   articleId,
   articleTitle,
   onBreadcrumbClick,
@@ -69,8 +71,48 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
         <Link href="/admin" className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>Admin</Link>
       </li>
     );
+
+    if (path === "/admin/create-article") {
+      breadcrumbItems.push(
+        <li key="createArticle" className="inline">
+          <span className="mx-2 text-gray-500">/</span>
+          <Link href={`/admin/create/article`} className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>Create Article</Link>
+        </li>
+      );
+    }
+
+    if (path === "/admin/create-category") {
+      breadcrumbItems.push(
+        <li key="createCategory" className="inline">
+          <span className="mx-2 text-gray-500">/</span>
+          <Link href={`/admin/create/category`} className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>Create Category</Link>
+        </li>
+      );
+    }
+
+    if (path === "/admin/logs") {
+      breadcrumbItems.push(
+        <li key="edit" className="inline">
+          <span className="mx-2 text-gray-500">/</span>
+          <Link href={`/admin/logs`} className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>Logs</Link>
+        </li>
+      );
+    }
+
+    if (path.includes("/admin/edit-category") && categoryId) {
+      breadcrumbItems.push(
+        <li key="editCategory" className="inline">
+          <span className="mx-2 text-gray-500">/</span>
+          <Link href={`/admin/edit/category/${categoryId}`} className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>
+            Edit Category
+          </Link>
+        </li>
+      );
+    }
+
+
     
-    if (path.includes("/edit")) {
+    if (path.includes("/edit/article")) {
       const card = articleId ? findCardById(articleId) : null;
       breadcrumbItems.push(
         <li key="edit" className="inline">

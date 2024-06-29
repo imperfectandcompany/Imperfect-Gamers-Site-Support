@@ -13,7 +13,6 @@ export interface FeatureCardProps {
   title: string;
   description: string;
   detailedDescription: string;
-  category: string;
   slug: string;
   matches: {
     title: boolean;

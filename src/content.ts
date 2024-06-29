@@ -5,17 +5,7 @@ interface Content {
     contactUs: string;
   };
   sections: {
-    [key: string]: Section;
-    serverRules: Section;
-    serverCommands: Section;
-    vipInfractions: Section;
-    staffGuidelines: Section;
-    postingGuidelines: Section;
-    adminPanelGuide: Section;
-    forumAndSubscriptions: Section;
-    cheatingPolicy: Section;
-    advancedRulesMenu: Section;
-    infractionsAndStats: Section;
+    [id: number]: Section;  // Changed from string keys to numerical IDs
   };
   footer: {
     copyright: string;
@@ -43,7 +33,7 @@ export interface Card {
   versions: CardVersion[]; // Array of version objects, including the initial and all edits
   archived: boolean; // Flag to indicate if the card is archived
   staffOnly: boolean; // Flag to indicate if the card is only visible to staff
-  category: string; // Category of the card to help in organizing
+  category: number; // Category (section here) of the card to help in organizing
   slug: string; // URL slug for the card
   showImage?: boolean; // Optional flag to show or hide the image in UI
   matches: {
@@ -54,14 +44,14 @@ export interface Card {
 }
 
 interface SectionVersion {
-  versionId: number; // Unique identifier for this version
+  versionId: number; // Unique identifier for this version - first version is initial creation
   title: string; // Title of the section for this version
   diffs?: string; // Optional serialized diff data between this and the previous version
   editedBy: number; // Identifier of the user who made the edit
   editDate: string; // Timestamp of when the edit was made
 }
 
-interface Section {
+export interface Section {
   versions: SectionVersion[]; // Array of version objects, including the initial and all edits
   cards: Card[];
 }
@@ -71,7 +61,7 @@ export const content: Content = {
     contactUs: "Need help? Contact us!",
   },
   sections: {
-    serverRules: {
+    1: {
       versions: [
         {
           versionId: 1,
@@ -99,7 +89,7 @@ export const content: Content = {
           ],
           archived: false,
           staffOnly: false,
-          category: "",
+          category: 1,
           slug: "",
           matches: {
             title: false,
@@ -124,7 +114,7 @@ export const content: Content = {
           ],
           archived: false,
           staffOnly: false,
-          category: "",
+          category: 1,
           slug: "",
           matches: {
             title: false,
@@ -150,7 +140,7 @@ export const content: Content = {
           ],
           archived: false,
           staffOnly: false,
-          category: "",
+          category: 1,
           slug: "",
           matches: {
             title: false,
@@ -176,7 +166,7 @@ export const content: Content = {
           ],
           archived: false,
           staffOnly: false,
-          category: "",
+          category: 1,
           slug: "",
           matches: {
             title: false,
@@ -186,7 +176,7 @@ export const content: Content = {
         },
       ],
     },
-    vipInfractions: {
+    2: {
       versions: [
         {
           versionId: 1,
@@ -215,7 +205,7 @@ export const content: Content = {
           ],
           archived: false,
           staffOnly: false,
-          category: "",
+          category: 2,
           slug: "",
           matches: {
             title: false,
@@ -225,7 +215,7 @@ export const content: Content = {
         },
       ],
     },
-    staffGuidelines: {
+    3: {
       versions: [
         {
           versionId: 1,
@@ -254,7 +244,7 @@ export const content: Content = {
           ],
           archived: false,
           staffOnly: false,
-          category: "",
+          category: 3,
           slug: "",
           matches: {
             title: false,
@@ -280,7 +270,7 @@ export const content: Content = {
           ],
           archived: false,
           staffOnly: false,
-          category: "",
+          category: 3,
           slug: "",
           matches: {
             title: false,
@@ -290,7 +280,7 @@ export const content: Content = {
         },
       ],
     },
-    postingGuidelines: {
+    4: {
       versions: [
         {
           versionId: 1,
@@ -319,7 +309,7 @@ export const content: Content = {
           ],
           archived: false,
           staffOnly: false,
-          category: "",
+          category: 4,
           slug: "",
           matches: {
             title: false,
@@ -329,7 +319,7 @@ export const content: Content = {
         },
       ],
     },
-    adminPanelGuide: {
+    5: {
       versions: [
         {
           versionId: 1,
@@ -358,7 +348,7 @@ export const content: Content = {
           ],
           archived: false,
           staffOnly: false,
-          category: "",
+          category: 5,
           slug: "",
           matches: {
             title: false,
@@ -368,7 +358,7 @@ export const content: Content = {
         },
       ],
     },
-    forumAndSubscriptions: {
+    6: {
       versions: [
         {
           versionId: 1,
@@ -397,7 +387,7 @@ export const content: Content = {
           ],
           archived: false,
           staffOnly: false,
-          category: "",
+          category: 6,
           slug: "",
           matches: {
             title: false,
@@ -407,7 +397,7 @@ export const content: Content = {
         },
       ],
     },
-    cheatingPolicy: {
+    7: {
       versions: [
         {
           versionId: 1,
@@ -436,7 +426,7 @@ export const content: Content = {
           ],
           archived: false,
           staffOnly: false,
-          category: "",
+          category: 7,
           slug: "",
           matches: {
             title: false,
@@ -446,7 +436,7 @@ export const content: Content = {
         },
       ],
     },
-    advancedRulesMenu: {
+    8: {
       versions: [
         {
           versionId: 1,
@@ -476,7 +466,7 @@ export const content: Content = {
           ],
           archived: false,
           staffOnly: false,
-          category: "",
+          category: 8,
           slug: "",
           matches: {
             title: false,
@@ -486,7 +476,7 @@ export const content: Content = {
         },
       ],
     },
-    infractionsAndStats: {
+    9: {
       versions: [
         {
           versionId: 1,
@@ -515,7 +505,7 @@ export const content: Content = {
           ],
           archived: false,
           staffOnly: false,
-          category: "",
+          category: 9,
           slug: "",
           matches: {
             title: false,
@@ -525,7 +515,7 @@ export const content: Content = {
         },
       ],
     },
-    serverCommands: {
+    10: {
       versions: [
         {
           versionId: 1,
@@ -554,7 +544,7 @@ export const content: Content = {
           ],
           archived: false,
           staffOnly: false,
-          category: "",
+          category: 10,
           slug: "",
           matches: {
             title: false,

@@ -149,11 +149,11 @@ if (loadingError) {
       };
       setArticle(newArticle);
       // Update the content object here as well
-      const sectionKey = Object.keys(content.sections).find(key =>
-        content.sections[key].cards.some(c => c.id === article.id)
+      const sectionKey = Object.keys(content.sections).find(key => 
+        content.sections[parseInt(key)].cards.some(c => c.id === article.id)
       );
       if (sectionKey) {
-        const section = content.sections[sectionKey];
+        const section = content.sections[parseInt(sectionKey)];
         const cardIndex = section.cards.findIndex(c => c.id === article.id);
         if (cardIndex > -1) {
           section.cards[cardIndex] = newArticle;

@@ -1,6 +1,6 @@
 // src/components/Article.tsx
 
-import { findCardBySlug, generateSlug } from '../utils';
+import { findCardBySlug, findCategoryById, generateSlug } from '../utils';
 import { AccessRestricted } from './AccessRestricted';
 import { ArticleView } from './ArticleView';
 import Breadcrumb from './Breadcrumb';
@@ -23,7 +23,10 @@ const Article = ({ title, path, onBreadcrumbClick }: ArticleProps) => {
     return <AccessRestricted message="Article not available" />;
   }
 
-  const categorySlug = card.category ? generateSlug(card.category) : '';
+ // Fetch the category details using the category ID
+ const category = card.category ? findCategoryById(card.category) : null;
+ const categorySlug = category ? generateSlug(category.versions.slice(-1)[0].title) : '';
+
 
   function handleBackAction() {
     history.back();

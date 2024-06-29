@@ -6,9 +6,9 @@ import { generateSlug } from '../utils';
 import Breadcrumb from './Breadcrumb';
 
 export const Categories = ({ path, onBreadcrumbClick }: { path: string, onBreadcrumbClick: () => void }) => {
-  const categories = Object.keys(content.sections).map(
-    (key: keyof typeof content.sections) => {
-      const latestVersion = content.sections[key].versions.slice(-1)[0];
+  const categories = Object.values(content.sections).map(
+    section => {
+      const latestVersion = section.versions.slice(-1)[0];
       return {
         title: latestVersion.title,
         slug: generateSlug(latestVersion.title),

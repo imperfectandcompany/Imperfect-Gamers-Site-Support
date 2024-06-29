@@ -1,10 +1,10 @@
-import { ComponentChild, VNode, h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { content } from '../content';
-import { findCardById, highlightText } from '../utils';
+import { findCardById } from '../utils';
 import { useMockAuth } from './models/userModel';
 import { route } from 'preact-router';
 import { TextDiffViewer } from './TextDiffViewer';
+import Breadcrumb from './Breadcrumb';
 
 /** A component that displays a log of all changes across the articles with detailed interaction */
 export function AdminLogs() {
@@ -69,6 +69,7 @@ export function AdminLogs() {
 
     return (
         <div className="container mx-auto p-4">
+                  <Breadcrumb path="/admin/logs" />
             <h1 className="text-2xl font-bold mb-4">Admin Logs</h1>
             <input
                 type="text"
@@ -76,7 +77,7 @@ export function AdminLogs() {
                 onChange={handleSearchChange}
                 className="border p-2 w-full mb-4"
             />
-            <button onClick={toggleSortDirection} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
+            <button onClick={toggleSortDirection} className="text-indigo-500 hover:text-indigo-600 transitionfont-bold py-2 px-4 rounded mb-4">
                 Sort by Date ({sortDirection})
             </button>
             {filteredLogs.map((log, index) => (

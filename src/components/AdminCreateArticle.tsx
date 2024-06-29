@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "preact/hooks";
 import { route } from "preact-router";
 import { useMockAuth } from "./models/userModel";
 import { addNewArticle, checkArticleExists, getAllCategories } from "../utils";
+import Breadcrumb from "./Breadcrumb";
 
 export const AdminCreateArticle: FunctionalComponent = () => {
   const { isAuthenticated } = useMockAuth();
@@ -11,9 +12,9 @@ export const AdminCreateArticle: FunctionalComponent = () => {
   const [description, setDescription] = useState("");
   const [detailedDescription, setDetailedDescription] = useState("");
   const [imgSrc, setImgSrc] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState<number>();
   const [categories, setCategories] = useState<
-    { key: string; title: string }[]
+    { id: number; title: string }[]
   >([]);
   const [loading, setLoading] = useState(false);
   const [titleExists, setTitleExists] = useState(false);
@@ -28,7 +29,7 @@ export const AdminCreateArticle: FunctionalComponent = () => {
       const categoriesList = await getAllCategories();
       setCategories(categoriesList);
       if (categoriesList.length > 0) {
-        setCategory(categoriesList[0].key);
+        setCategory(categoriesList[0].id);
       }
     }
     fetchCategories();
@@ -62,19 +63,22 @@ export const AdminCreateArticle: FunctionalComponent = () => {
       return;
     }
     setLoading(true);
-    const result = await addNewArticle({
-      title,
-      description,
-      detailedDescription,
-      category,
-      imgSrc,
-    });
-    setLoading(false);
-    if (result.success) {
-      alert("Article created successfully!");
-      route("/admin/dashboard");
-    } else {
-      alert("Failed to create article");
+
+    if(category){
+      const result = await addNewArticle({
+        title,
+        description,
+        detailedDescription,
+        category,
+        imgSrc,
+      });
+      setLoading(false);
+      if (result.success) {
+        alert("Article created successfully!");
+        route("/admin/dashboard");
+      } else {
+        alert("Failed to create article");
+      }
     }
   };
 
@@ -83,6 +87,8 @@ export const AdminCreateArticle: FunctionalComponent = () => {
   }
 
   return (
+<>
+<Breadcrumb path="/admin/create-article" />
     <div className="create-article-form relative px-8 py-16 mx-auto max-w-7xl md:px-12 lg:px-18 lg:py-22">
       <h1 className="text-3xl font-normal tracking-tighter text-black sm:text-4xl lg:text-5xl mb-8">
         Create New Article
@@ -122,7 +128,7 @@ export const AdminCreateArticle: FunctionalComponent = () => {
         <SelectField
           label="Category"
           options={categories}
-          selectedValue={category}
+          selectedValue={category ?? undefined}
           onChange={setCategory}
         />
         <button
@@ -134,6 +140,7 @@ export const AdminCreateArticle: FunctionalComponent = () => {
         </button>
       </form>
     </div>
+</>
   );
 };
 
@@ -201,22 +208,22 @@ const SelectField = ({
   onChange,
 }: {
   label: string;
-  options: { key: string; title: string }[];
-  selectedValue: string;
-  onChange: (value: string) => void;
+  options: { id: number; title: string }[];
+  selectedValue: number | undefined;
+  onChange: (value: number) => void;
 }) => (
   <label className="block">
     {label}:
     <select
       className="border border-gray-300 hover:border-gray-400 p-2 w-full transition duration-200 focus:outline-none"
       onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-        onChange(e.currentTarget.value)
+        onChange(Number(e.currentTarget.value))
       }
       value={selectedValue}
       required
     >
       {options.map((option) => (
-        <option key={option.key} value={option.key}>
+        <option key={option.id} value={option.id}>
           {option.title}
         </option>
       ))}

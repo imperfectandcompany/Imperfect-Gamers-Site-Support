@@ -3,6 +3,7 @@ import { useState, useRef } from "preact/hooks";
 import { route } from "preact-router";
 import { checkCategoryExists, addNewCategory } from "../utils";
 import { useMockAuth } from "./models/userModel";
+import Breadcrumb from "./Breadcrumb";
 
 export const AdminCreateCategory: FunctionalComponent = () => {
   const [categoryName, setCategoryName] = useState("");
@@ -47,6 +48,8 @@ export const AdminCreateCategory: FunctionalComponent = () => {
   };
 
   return (
+<>
+<Breadcrumb path="/admin/create-category" />
     <div className="px-8 py-16 mx-auto max-w-7xl md:px-12 lg:px-18 lg:py-22">
       <h1 className="text-3xl font-normal tracking-tighter text-black sm:text-4xl lg:text-5xl mb-8">
         Create New Category
@@ -74,11 +77,12 @@ export const AdminCreateCategory: FunctionalComponent = () => {
         <button
           type="submit"
           disabled={loading || categoryExists}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 transition ease-in-out duration-300"
+          className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 transition ease-in-out duration-300"
         >
           {loading ? "Creating..." : "Create Category"}
         </button>
       </form>
     </div>
+</>
   );
 };

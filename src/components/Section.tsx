@@ -39,7 +39,6 @@ export const Section: FunctionalComponent<SectionProps> = ({
         imgSrc={card.imgSrc} // Add the imgSrc value
         description={latestVersion.description} // Add the description value
         detailedDescription={latestVersion.detailedDescription} // Add the detailedDescription value
-        category={card.category}
           slug={card.slug}
           matches={card.matches} // Pass matches prop
           searchQuery={searchQuery} // Pass searchQuery prop
