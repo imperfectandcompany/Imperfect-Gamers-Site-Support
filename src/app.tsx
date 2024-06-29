@@ -17,6 +17,9 @@ import { ErrorBoundary } from "./components/ErrorBoundary"; // Add this line to 
 import { AdminDashboard } from "./components/AdminDashboard";
 import { AdminLogs } from "./components/AdminLogs";
 import { AdminEditArticle } from "./components/AdminEditArticle";
+import { AdminCreateArticle } from "./components/AdminCreateArticle";
+import { AdminCreateCategory } from "./components/AdminCreateCategory";
+import AdminEditCategory from "./components/AdminEditCategory";
 
 export interface AppState {
   searchQuery: string | null;
@@ -302,8 +305,11 @@ export function App(): VNode {
           />
             <AdminDashboard path="/admin/dashboard" />
             <AdminLogs path="/admin/logs" />
+            <AdminCreateArticle path="/admin/create/article" />
+            <AdminCreateCategory path="/admin/create/category" />
             <Admin path="/admin"/>
-            <AdminEditArticle path="/admin/edit/:articleId" />
+            <AdminEditArticle path="/admin/edit/article/:articleId" />
+            <AdminEditCategory path="/admin/edit/category/:id" />
           <NotFound default />
         </Router>
         </ErrorBoundary>

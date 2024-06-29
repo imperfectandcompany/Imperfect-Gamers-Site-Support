@@ -19,7 +19,6 @@ export function findCardBySlug(slug: string): Card | null {
   return null;
 }
 
-
 export function editCard(cardId: number, updatedFields: Partial<Card & { description?: string, title?: string, detailedDescription?: string }>): void {
   const card = findCardById(cardId);
   if (!card) return;
@@ -54,6 +53,118 @@ export function editCard(cardId: number, updatedFields: Partial<Card & { descrip
 
   card.versions.push(newVersion);
 }
+
+
+
+
+// Function to check if a category already exists
+export const checkCategoryExists = async (title: string): Promise<boolean> => {
+  const normalizedTitle = title.trim().toLowerCase();
+  return Object.keys(content.sections).some(key => {
+    const latestVersionTitle = content.sections[key].versions.slice(-1)[0].title.toLowerCase();
+    return latestVersionTitle === normalizedTitle;
+  });
+};
+
+// Function to add a new category
+export const addNewCategory = async ({ title }: { title: string }): Promise<{ success: boolean }> => {
+  try {
+    if (await checkCategoryExists(title)) {
+      console.error('Category already exists');
+      return { success: false };
+    }
+
+    const newVersionId = 1; // As this is a new category, it starts with versionId 1
+    content.sections[title] = {
+      versions: [{
+        versionId: newVersionId,
+        title: title,
+        diffs: '',
+        // TODO PASS LOGGED IN USER ID
+        editedBy: 1, // Assuming a logged-in user ID, replace with dynamic data if available
+        editDate: new Date().toISOString()
+      }],
+      cards: [] // No cards initially
+    };
+
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to create new category:', error);
+    return { success: false };
+  }
+};
+
+// Function to find the next available ID
+const getNextId = () => {
+  const allCards = Object.values(content.sections).flatMap(section => section.cards);
+  const highestId = allCards.reduce((maxId, card) => Math.max(maxId, card.id), 0);
+  return highestId + 1;
+};
+
+export const addNewArticle = async ({ title, description, detailedDescription, category, imgSrc }: { title: string, description: string, detailedDescription: string, category: string, imgSrc: string }): Promise<{ success: boolean }> => {
+  try {
+      const newId = getNextId(); // Generate the next ID based on current content
+      const newArticle: Card = {
+          id: newId,
+          imgSrc: imgSrc,
+          versions: [{
+              versionId: 1,
+              title,
+              description,
+              detailedDescription,
+        // TODO PASS LOGGED IN USER ID
+              editedBy: 1, // Assuming a logged-in user ID
+              editDate: new Date().toISOString(),
+              changes: ['Initial creation']
+          }],
+          archived: false,
+          staffOnly: false,
+          category: category, // Set category
+          slug: title.toLowerCase().replace(/ /g, '-'),
+          matches: {
+              title: false,
+              description: false,
+              detailedDescription: false
+          }
+      };
+
+      // Ensure the category exists in the sections or create it
+      content.sections[category] = content.sections[category] || { versions: [], cards: [] };
+      content.sections[category].cards.push(newArticle);
+
+      return { success: true };
+  } catch (error) {
+      console.error('Failed to create new article:', error);
+      return { success: false };
+  }
+};
+
+// Function to check if an article with the same title already exists
+export const checkArticleExists = async (title: string): Promise<boolean> => {
+  const normalizedTitle = title.trim().toLowerCase();
+
+  for (const section of Object.values(content.sections)) {
+    for (const card of section.cards) {
+      const latestTitle = card.versions[card.versions.length - 1].title.toLowerCase();
+      if (latestTitle === normalizedTitle) {
+        return true; // Found an article with the same title
+      }
+    }
+  }
+  return false; // No article with the same title found
+};
+
+// Function to get all categories with their latest titles
+export const getAllCategories = async (): Promise<{ key: string, title: string }[]> => {
+  return Object.keys(content.sections).map(key => {
+      const latestVersion = content.sections[key].versions.slice(-1)[0];
+      return {
+          key,
+          title: latestVersion.title // Assuming the latest version of each section contains the current title
+      };
+  });
+};
+
 
 export function findCardById(id: number): Card | null {
   for (const section of Object.values(content.sections)) {

@@ -75,7 +75,7 @@ const Breadcrumb: FunctionalComponent<BreadcrumbProps> = ({
       breadcrumbItems.push(
         <li key="edit" className="inline">
           <span className="mx-2 text-gray-500">/</span>
-          <Link href={`/admin/edit/${articleId}`} className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>{card?.versions.slice(-1)[0].title}</Link>
+          <Link href={`/admin/edit/article/${articleId}`} className="text-indigo-600 hover:text-indigo-800" onClick={onBreadcrumbClick}>{card?.versions.slice(-1)[0].title}</Link>
         </li>
       );
     

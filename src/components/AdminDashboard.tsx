@@ -20,7 +20,7 @@ export const AdminDashboard: FunctionalComponent = ({ }) => {
 
   const handleEdit = (id: number) => {
     // Correctly pass the article ID to the AdminEditArticle component
-    route(`/admin/edit/${id}`);
+    route(`/admin/edit/article/${id}`);
 };
 
   const handleCloseEdit = () => {
@@ -59,13 +59,25 @@ export const AdminDashboard: FunctionalComponent = ({ }) => {
           Admin Dashboard
         </h1>
 
-        <div className="mt-8">
+        <div className="mt-8 flex space-x-2" >
   <button
     onClick={() => route('/admin/logs')}
-    className="px-4 py-2 bg-indigo-500 text-white font-bold rounded hover:bg-indigo-600 transition duration-300 ease-in-out"
+    className="px-4 py-2 bg-indigo-100 text-stone-800 hover:text-white font-bold rounded hover:bg-indigo-600 transition duration-300 ease-in-out"
   >
     Visit Admin Logs
   </button>
+  <button
+    onClick={() => route('/admin/create/article')}
+    className="px-4 py-2 bg-indigo-50 text-stone-800 hover:text-white font-bold rounded hover:bg-indigo-600 transition duration-300 ease-in-out"
+  >
+    Create Article
+  </button>
+  <button
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition ease-in-out duration-300"
+          onClick={() => route("/admin/create/category")}
+        >
+          Create New Category
+        </button>
   </div>
 
       <section className="mt-8">
