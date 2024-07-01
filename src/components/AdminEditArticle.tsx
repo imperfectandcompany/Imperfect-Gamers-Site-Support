@@ -1,5 +1,3 @@
-
-
 import { FunctionalComponent } from "preact";
 import { useState, useEffect, useRef } from "preact/hooks";
 import { Card, content } from "../content";
@@ -12,14 +10,15 @@ import { AdminError } from "./AdminError";
 import { useMockAuth } from "./models/userModel";
 import { TextDiffViewer } from "./TextDiffViewer";
 import { AdminArticleHistoryView } from "./AdminArticleHistoryView";
+import { isFeatureEnabled } from "../featureFlags";
 
 interface MatchParams {
   articleId: number;
 }
 
-export const AdminEditArticle: FunctionalComponent<{ matches: MatchParams }> = ({
-  matches,
-}) => {
+export const AdminEditArticle: FunctionalComponent<{
+  matches: MatchParams;
+}> = ({ matches }) => {
   const { articleId } = matches;
   const [article, setArticle] = useState<Card | null>(null);
   const [loadingError, setLoadingError] = useState<string>("");
@@ -36,7 +35,7 @@ export const AdminEditArticle: FunctionalComponent<{ matches: MatchParams }> = (
         if (!fetchedArticle) {
           throw new Error("Article not found");
         }
-        if (!isStaff()) throw new Error('Unauthorized access');
+        if (!isStaff()) throw new Error("Unauthorized access");
         setArticle(fetchedArticle);
       } catch (error: any) {
         console.error("Failed to fetch article:", error);
@@ -45,12 +44,12 @@ export const AdminEditArticle: FunctionalComponent<{ matches: MatchParams }> = (
     };
 
     fetchArticle();
-}, [articleId, isAuthenticated, isStaff]);
+  }, [articleId, isAuthenticated, isStaff]);
 
+  if (!isAuthenticated())
+    return <AdminError message="Please log in to edit articles." />;
 
-if (!isAuthenticated()) return <AdminError message="Please log in to edit articles."/>;
-
-if (loadingError) {
+  if (loadingError) {
     return <AdminError message={loadingError} />;
   }
 
@@ -66,8 +65,9 @@ if (loadingError) {
     }
   };
 
-
-  const [articleText, setArticleText] = useState(article.versions.slice(-1)[0].detailedDescription);
+  const [articleText, setArticleText] = useState(
+    article.versions.slice(-1)[0].detailedDescription
+  );
 
   const handleTextAreaInput = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const target = event.target as HTMLTextAreaElement;
@@ -149,12 +149,12 @@ if (loadingError) {
       };
       setArticle(newArticle);
       // Update the content object here as well
-      const sectionKey = Object.keys(content.sections).find(key => 
-        content.sections[parseInt(key)].cards.some(c => c.id === article.id)
+      const sectionKey = Object.keys(content.sections).find((key) =>
+        content.sections[parseInt(key)].cards.some((c) => c.id === article.id)
       );
       if (sectionKey) {
         const section = content.sections[parseInt(sectionKey)];
-        const cardIndex = section.cards.findIndex(c => c.id === article.id);
+        const cardIndex = section.cards.findIndex((c) => c.id === article.id);
         if (cardIndex > -1) {
           section.cards[cardIndex] = newArticle;
         }
@@ -164,8 +164,8 @@ if (loadingError) {
 
   // This will determine if the articleText is different from the original article content
   const isContentChanged =
-    article && articleText !== article?.versions.slice(-1)[0].detailedDescription;
-
+    article &&
+    articleText !== article?.versions.slice(-1)[0].detailedDescription;
 
   // Content display based on the current view
   const displayContent = () => {
@@ -224,7 +224,11 @@ if (loadingError) {
                   <button
                     id="resetArticle"
                     type="button"
-                    onClick={() => setArticleText(article?.versions.slice(-1)[0].detailedDescription)}
+                    onClick={() =>
+                      setArticleText(
+                        article?.versions.slice(-1)[0].detailedDescription
+                      )
+                    }
                     disabled={!isContentChanged}
                     className="p-1 px-4 font-semibold text-white bg-stone-500 hover:bg-stone-600 focus:ring-2 focus:ring-stone-400 transition rounded-md select-none disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none"
                     title={
@@ -249,34 +253,36 @@ if (loadingError) {
             <section className="mt-8"></section>
 
             <div className="flex">
+            {isFeatureEnabled('PreviewArticle')&& (
               <div className="m-5">
-                <div
-                  className="w-10 h-10 font-bold text-center text-white bg-stone-500 border-4 border-stone-400 transition duration-300 rounded-full cursor-pointer hover:bg-stone-600"
-                  onClick={toggleRaw}
+              <div
+                className="w-10 h-10 font-bold text-center text-white bg-stone-500 border-4 border-stone-400 transition duration-300 rounded-full cursor-pointer hover:bg-stone-600"
+                onClick={toggleRaw}
+              >
+                <svg
+                  fill="#FFFFFF"
+                  className="h-4 w-4 mx-auto mt-2"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
                 >
-                  <svg
-                    fill="#FFFFFF"
-                    className="h-4 w-4 mx-auto mt-2"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                  >
-                    <path d="m494.8,241.4l-50.6-49.4c-50.1-48.9-116.9-75.8-188.2-75.8s-138.1,26.9-188.2,75.8l-50.6,49.4c-11.3,12.3-4.3,25.4 0,29.2l50.6,49.4c50.1,48.9 116.9,75.8 188.2,75.8s138.1-26.9 188.2-75.8l50.6-49.4c4-3.8 11.7-16.4 0-29.2zm-238.8,84.4c-38.5,0-69.8-31.3-69.8-69.8 0-38.5 31.3-69.8 69.8-69.8 38.5,0 69.8,31.3 69.8,69.8 0,38.5-31.3,69.8-69.8,69.8zm-195.3-69.8l35.7-34.8c27-26.4 59.8-45.2 95.7-55.4-28.2,20.1-46.6,53-46.6,90.1 0,37.1 18.4,70.1 46.6,90.1-35.9-10.2-68.7-29-95.7-55.3l-35.7-34.7zm355,34.8c-27,26.3-59.8,45.1-95.7,55.3 28.2-20.1 46.6-53 46.6-90.1 0-37.2-18.4-70.1-46.6-90.1 35.9,10.2 68.7,29 95.7,55.4l35.6,34.8-35.6,34.7z" />
-                  </svg>
-                </div>
+                  <path d="m494.8,241.4l-50.6-49.4c-50.1-48.9-116.9-75.8-188.2-75.8s-138.1,26.9-188.2,75.8l-50.6,49.4c-11.3,12.3-4.3,25.4 0,29.2l50.6,49.4c50.1,48.9 116.9,75.8 188.2,75.8s138.1-26.9 188.2-75.8l50.6-49.4c4-3.8 11.7-16.4 0-29.2zm-238.8,84.4c-38.5,0-69.8-31.3-69.8-69.8 0-38.5 31.3-69.8 69.8-69.8 38.5,0 69.8,31.3 69.8,69.8 0,38.5-31.3,69.8-69.8,69.8zm-195.3-69.8l35.7-34.8c27-26.4 59.8-45.2 95.7-55.4-28.2,20.1-46.6,53-46.6,90.1 0,37.1 18.4,70.1 46.6,90.1-35.9-10.2-68.7-29-95.7-55.3l-35.7-34.7zm355,34.8c-27,26.3-59.8,45.1-95.7,55.3 28.2-20.1 46.6-53 46.6-90.1 0-37.2-18.4-70.1-46.6-90.1 35.9,10.2 68.7,29 95.7,55.4l35.6,34.8-35.6,34.7z" />
+                </svg>
               </div>
+            </div>
+            )}
               <div className="detail-description">{renderedContent}</div>
             </div>
           </>
         );
-        case "history":
-            return history.length > 1 ? (
-              <TextDiffViewer
-                oldText={article.versions.slice(-2)[0].detailedDescription}
-                newText={articleText}
-              />
-            ) : (
-              <p>No previous versions to display.</p>
-            );
+      case "history":
+        return history.length > 1 ? (
+          <TextDiffViewer
+            oldText={article.versions.slice(-2)[0].detailedDescription}
+            newText={articleText}
+          />
+        ) : (
+          <p>No previous versions to display.</p>
+        );
       default:
         return null;
     }
@@ -284,25 +290,35 @@ if (loadingError) {
 
   return (
     <>
-      <Breadcrumb path={`/admin/edit/article/${articleId}`} articleId={article.id} />
+      <Breadcrumb
+        path={`/admin/edit/article/${articleId}`}
+        articleId={article.id}
+      />
       <div className="container relative px-8 py-16 mx-auto max-w-7xl md:px-12 lg:px-18 lg:py-22">
         <h1 className="text-3xl font-normal tracking-tighter text-black sm:text-4xl lg:text-5xl">
-        Editing: {article.versions.slice(-1)[0].title}
+          Editing: {article.versions.slice(-1)[0].title}
         </h1>
-        <button
-          onClick={() =>
-            currentView === "raw" || currentView === "rendered"
-              ? toggleHistory()
-              : toggleRaw()
-          }
-          disabled={(history.length <= 1) && (currentView === "raw" || currentView === "rendered")}
-        >
-          {currentView === "raw" || currentView === "rendered"
-            ? "View History"
-            : "Back to Edit"}
-        </button>
+        {isFeatureEnabled("ViewArticleHistoryDiff") && (
+          <button
+            onClick={() =>
+              currentView === "raw" || currentView === "rendered"
+                ? toggleHistory()
+                : toggleRaw()
+            }
+            disabled={
+              history.length <= 1 &&
+              (currentView === "raw" || currentView === "rendered")
+            }
+          >
+            {currentView === "raw" || currentView === "rendered"
+              ? "View History"
+              : "Back to Edit"}
+          </button>
+        )}
         {displayContent()}
-        <AdminArticleHistoryView card={article}/>
+        {isFeatureEnabled("ViewArticleHistoryChangelog") && (
+          <AdminArticleHistoryView card={article} />
+        )}
       </div>
     </>
   );

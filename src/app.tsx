@@ -20,6 +20,7 @@ import { AdminEditArticle } from "./components/AdminEditArticle";
 import { AdminCreateArticle } from "./components/AdminCreateArticle";
 import { AdminCreateCategory } from "./components/AdminCreateCategory";
 import AdminEditCategory from "./components/AdminEditCategory";
+import { isFeatureEnabled } from "./featureFlags";
 
 export interface AppState {
   searchQuery: string | null;
@@ -46,33 +47,56 @@ export const initialState: AppState = {
 export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case "UPDATE_SEARCH":
-      return { ...state, searchQuery: action.value ?? "", isSearching: true };
+      if (isFeatureEnabled("HomeSearch")) {
+        return { ...state, searchQuery: action.value ?? "", isSearching: true };
+      } else {
+        return state;
+      }
     case "NO_RESULTS_FOUND":
-      return {
-        ...state,
-        searchQuery: action.value ?? null,
-        isSearching: false,
-      };
+      if (isFeatureEnabled("HomeSearch")) {
+        return {
+          ...state,
+          searchQuery: action.value ?? null,
+          isSearching: false,
+        };
+      } else {
+        return state;
+      }
     case "CLEAR_SEARCH":
-      return {
-        ...state,
-        searchQuery: "",
-        isSearching: false,
-        selectedItem: null,
-      };
+      if (isFeatureEnabled("HomeSearch")) {
+        return {
+          ...state,
+          searchQuery: "",
+          isSearching: false,
+          selectedItem: null,
+        };
+      } else {
+        return state;
+      }
     case "UPDATE_LAST_ROUTE":
       return { ...state, lastRoute: action.value ?? null };
     case "SELECT_ITEM":
-      return {
-        ...state,
-        selectedItem: action.item ?? null,
-        isSearching: false,
-        searchQuery: null,
-      }; // Clear searchQuery when item is selected
+      if (isFeatureEnabled("HomeSearch")) {
+        return {
+          ...state,
+          selectedItem: action.item ?? null,
+          isSearching: false,
+          searchQuery: null,
+        }; // Clear searchQuery when item is selected
+      } else {
+        return {
+          ...state,
+          selectedItem: action.item ?? null,
+        };
+      }
     case "UNSELECT_ITEM":
       return { ...state, selectedItem: null };
     case "STOP_SEARCH":
-      return { ...state, isSearching: false };
+      if (isFeatureEnabled("HomeSearch")) {
+        return { ...state, isSearching: false };
+      } else {
+        return state;
+      }
     default:
       return state;
   }
@@ -227,41 +251,43 @@ export function App(): VNode {
 
   return (
     <div className="flex flex-col min-h-screen mx-auto md:py-8 max-w-screen-xl">
-      <div class="relative my-8 md:my-0 bg-gradient-to-b from-indigo-500 via-indigo-500/5 to-indigo-500/10 shadow-lg rounded-lg p-1 mx-4 sm:mx-6 md:mx-8 lg:mx-10 xl:mx-4">
-        <div className="bg-blue-900 text-white text-center p-4 rounded-lg">
-          <button
-            className="absolute top-3 right-3 text-indigo-300 hover:text-indigo-500"
-            onClick={(e) => {
-              const parentElement = e.currentTarget.parentElement;
-              if (parentElement) {
-                const grandParentElement = parentElement.parentElement;
-                if (grandParentElement) {
-                  grandParentElement.style.display = "none";
+      {isFeatureEnabled("NotificationBanner") && (
+        <div class="relative my-8 md:my-0 bg-gradient-to-b from-indigo-500 via-indigo-500/5 to-indigo-500/10 shadow-lg rounded-lg p-1 mx-4 sm:mx-6 md:mx-8 lg:mx-10 xl:mx-4">
+          <div className="bg-blue-900 text-white text-center p-4 rounded-lg">
+            <button
+              className="absolute top-3 right-3 text-indigo-300 hover:text-indigo-500"
+              onClick={(e) => {
+                const parentElement = e.currentTarget.parentElement;
+                if (parentElement) {
+                  const grandParentElement = parentElement.parentElement;
+                  if (grandParentElement) {
+                    grandParentElement.style.display = "none";
+                  }
                 }
-              }
-            }}
-          >
-            &#x2715;
-          </button>
-          <p className="text-xs sm:text-sm md:text-base">
-            <span className="font-medium text-indigo-50">Update:</span>{" "}
-            <span className="text-indigo-100">Fri, Jun 21, 2024</span>
-            <br />
-            This site is currently a work in progress. For immediate assistance,
-            please visit our discord at{" "}
-            <a
-              href="https://imperfectgamers.org/discord/"
-              class="text-indigo-300 hover:text-indigo-500"
+              }}
             >
-              https://imperfectgamers.org/discord/
-            </a>
-            .
-          </p>
-          <p class="text-right text-xs mt-1 sm:text-sm italic">
-            - Imperfect Gamers Team
-          </p>
+              &#x2715;
+            </button>
+            <p className="text-xs sm:text-sm md:text-base">
+              <span className="font-medium text-indigo-50">Update:</span>{" "}
+              <span className="text-indigo-100">Fri, Jun 21, 2024</span>
+              <br />
+              This site is currently a work in progress. For immediate
+              assistance, please visit our discord at{" "}
+              <a
+                href="https://imperfectgamers.org/discord/"
+                class="text-indigo-300 hover:text-indigo-500"
+              >
+                https://imperfectgamers.org/discord/
+              </a>
+              .
+            </p>
+            <p class="text-right text-xs mt-1 sm:text-sm italic">
+              - Imperfect Gamers Team
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       <Header
         onSearchChange={handleSearchChange}
@@ -270,48 +296,66 @@ export function App(): VNode {
         onCategoryClick={() => dispatch({ type: "CLEAR_SEARCH" })}
       />
       <main className="flex-1 relative">
-      <ErrorBoundary>
-        <Router>
-          <Home
-            path="/"
-            onCardClick={handleCardClick}
-            searchQuery={state.searchQuery}
-            isSearching={state.isSearching}
-            currentItemCount={state.currentItemCount}
-            onBreadcrumbClick={() => dispatch({ type: "CLEAR_SEARCH" })}
-          />
-          <Home
-            path="/search"
-            onCardClick={handleCardClick}
-            searchQuery={state.searchQuery}
-            isSearching={state.isSearching}
-            currentItemCount={state.currentItemCount}
-            onBreadcrumbClick={() => dispatch({ type: "NO_RESULTS_FOUND" })}
-            onBreadcrumbClickHome={() => dispatch({ type: "CLEAR_SEARCH" })}
-          />
-          <Article
-            path="/article/:title"
-            lastRoute={state.lastRoute || "/"}
-            onBreadcrumbClick={() => dispatch({ type: "CLEAR_SEARCH" })}
-          />
-          <Categories
-            path="/categories"
-            onBreadcrumbClick={() => dispatch({ type: "CLEAR_SEARCH" })}
-          />
-          <CategoryItems
-            path="/category/:categorySlug"
-            categorySlug=""
-            onCardClick={handleCardClick} // Pass handleCardClick to CategoryItems
-          />
-            <AdminDashboard path="/admin/dashboard" />
-            <AdminLogs path="/admin/logs" />
-            <AdminCreateArticle path="/admin/create/article" />
-            <AdminCreateCategory path="/admin/create/category" />
-            <Admin path="/admin"/>
-            <AdminEditArticle path="/admin/edit/article/:articleId" />
-            <AdminEditCategory path="/admin/edit/category/:id" />
-          <NotFound default />
-        </Router>
+        <ErrorBoundary>
+          <Router>
+            <Home
+              path="/"
+              onCardClick={handleCardClick}
+              searchQuery={state.searchQuery}
+              isSearching={state.isSearching}
+              currentItemCount={state.currentItemCount}
+              onBreadcrumbClick={() => dispatch({ type: "CLEAR_SEARCH" })}
+            />
+            {isFeatureEnabled("HomeSearch") && (
+              <Home
+                path="/search"
+                onCardClick={handleCardClick}
+                searchQuery={state.searchQuery}
+                isSearching={state.isSearching}
+                currentItemCount={state.currentItemCount}
+                onBreadcrumbClick={() => dispatch({ type: "NO_RESULTS_FOUND" })}
+                onBreadcrumbClickHome={() => dispatch({ type: "CLEAR_SEARCH" })}
+              />
+            )}
+            <Article
+              path="/article/:title"
+              lastRoute={state.lastRoute || "/"}
+              onBreadcrumbClick={() => dispatch({ type: "CLEAR_SEARCH" })}
+            />
+            {isFeatureEnabled("CategoriesPage") && (
+              <Categories
+                path="/categories"
+                onBreadcrumbClick={() => dispatch({ type: "CLEAR_SEARCH" })}
+              />
+            )}
+            {isFeatureEnabled("SpecificCategoryPage") && (
+              <CategoryItems
+                path="/category/:categorySlug"
+                categorySlug=""
+                onCardClick={handleCardClick} // Pass handleCardClick to CategoryItems
+              />
+            )}
+            {isFeatureEnabled("AdminDashboard") && (
+              <AdminDashboard path="/admin/dashboard" />
+            )}
+            {isFeatureEnabled("ViewAdminLogs") && (
+              <AdminLogs path="/admin/logs" />
+            )}
+            {isFeatureEnabled("CreateArticle") && (
+              <AdminCreateArticle path="/admin/create/article" />
+            )}
+            {isFeatureEnabled("CreateCategory") && (
+              <AdminCreateCategory path="/admin/create/category" />
+            )}
+            {isFeatureEnabled("AdminDashboard") && <Admin path="/admin" />}
+            {isFeatureEnabled("EditArticle") && (
+              <AdminEditArticle path="/admin/edit/article/:articleId" />
+            )}
+            {isFeatureEnabled("EditCategory") && (
+              <AdminEditCategory path="/admin/edit/category/:id" />
+            )}
+            <NotFound default />
+          </Router>
         </ErrorBoundary>
       </main>
       <Footer />
